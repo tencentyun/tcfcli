@@ -22,7 +22,7 @@ tcf 通过一个函数模板配置文件，完成函数及相关周边资源的�
 
 ## 运行环境
 
-tcf 可以在 Windows、Linux、Mac 上运行。tcf 基于 Python 开发完成，因此在安装及运行前需要系统中安装有 Python 环境。更详细信息可见[安装及配置](https://github.com/tencentyun/tcfcli/docs/安装及配置.md)。
+tcf 可以在 Windows、Linux、Mac 上运行。tcf 基于 Python 开发完成，因此在安装及运行前需要系统中安装有 Python 环境。更详细信息可见[安装及配置](https://github.com/tencentyun/tcfcli/blob/master/docs/安装及配置.md)。
 
 ## 快速入门
 
@@ -31,7 +31,7 @@ tcf 可以在 Windows、Linux、Mac 上运行。tcf 基于 Python 开发完成�
 
 #### 前置依赖
 
-在安装 tcf 前，请确保系统中已经安装好了如下软件：
+在安装 tcf 前，请确保系统中已经安装好了如下软件：
 
 * Python 2.7+ 或 Python 3.6+
 * pip
@@ -55,7 +55,7 @@ TCF CLI, version 0.1.0
 
 从腾讯云控制台获取到账号的 APPID，SecretId及 SecretKey 信息，并配置到 tcf 中，作为 tcf 调用云 API 时的认证信息。
 
-例如获取到的账号 APPID 为 1253970223，SecretId 和 SecretKey 分别为 AKIxxxxxxxxxx 及 uxxlxxxxxxxx，期望在广州区使用云函数。则通过如下命令完成 tcf 的配置
+例如获取到的账号 APPID 为 1253970223，SecretId 和 SecretKey 分别为 AKIxxxxxxxxxx 及 uxxlxxxxxxxx，期望在广州区使用云函数。则通过如下命令完成 tcf 的配置
 ：
 ```bash
 $ tcf configure set --region ap-guangzhou --appid 1253970223 --secret-id AKIxxxxxxxxxx --secret-key uxxlxxxxxxxx
@@ -63,7 +63,7 @@ $ tcf configure set --region ap-guangzhou --appid 1253970223 --secret-id AKIxxxx
 
 ### 初始化模板项目
 
-选择进入到合适的代码目录，例如 `cd ~`。
+选择进入到合适的代码目录，例如 `cd ~`。
 
 通过执行如下命令，创建运行环境为 Python 2.7，名称为 testscf 的项目。
 
@@ -84,7 +84,7 @@ $ tcf init --runtime python2.7 --name testscf
 $ tcf package --template-file template.yaml
 ```
 
-tcf 会依据 template.yaml 文件内的描述，将 hello_world 代码目录内的代码生成部署程序包，并生成 deploy 配置文件。
+tcf 会依据 template.yaml 文件内的描述，将 hello_world 代码目录内的代码生成部署程序包，并生成 deploy 配置文件。
 
 此时再次通过 `ls` 命令，可以看到项目目录内多了 deploy.yaml 部署用配置文件，以及类似 `32b29935-1ec1-11e9-be82-9801a7af1801.zip` 的部署包。
 
@@ -103,12 +103,12 @@ $ tcf deploy --template-file deploy.yaml
 
 ## 详细使用指导
 
-* [快速开始](https://github.com/tencentyun/tcfcli/docs/快速开始.md)
-* [安装及配置](https://github.com/tencentyun/tcfcli/docs/安装及配置.md)
-* [初始化示例项目](https://github.com/tencentyun/tcfcli/docs/初始化示例项目.md)
-* [打包部署](https://github.com/tencentyun/tcfcli/docs/打包部署.md)
-* [本地调试](https://github.com/tencentyun/tcfcli/docs/本地调试.md)
-* [测试模板](https://github.com/tencentyun/tcfcli/docs/测试模板.md)
-* [模板文件](https://github.com/tencentyun/tcfcli/docs/模板文件.md)
-* [TCSAM说明](https://github.com/tencentyun/tcfcli/docs/specs/tencentcloud%20sam%20version%202018-11-11-zh-cn.md)
+* [快速开始](https://github.com/tencentyun/tcfcli/blob/master/docs/快速开始.md)
+* [安装及配置](https://github.com/tencentyun/tcfcli/blob/master/docs/安装及配置.md)
+* [初始化示例项目](https://github.com/tencentyun/tcfcli/blob/master/docs/初始化示例项目.md)
+* [打包部署](https://github.com/tencentyun/tcfcli/blob/master/docs/打包部署.md)
+* [本地调试](https://github.com/tencentyun/tcfcli/blob/master/docs/本地调试.md)
+* [测试模板](https://github.com/tencentyun/tcfcli/blob/master/docs/测试模板.md)
+* [模板文件](https://github.com/tencentyun/tcfcli/blob/master/docs/模板文件.md)
+* [TCSAM说明](https://github.com/tencentyun/tcfcli/blob/master/docs/specs/tencentcloud%20sam%20version%202018-11-11-zh-cn.md)
 
