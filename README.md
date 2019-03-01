@@ -1,128 +1,114 @@
-This is a local tools for packing and deploying function to SCF.
+# tcf cli
 
-### Prepare dev environment
-#### Prerequisites：
-- Python3.6 or Python2(>2.7)
-- Window, Linux, macOS with PIP
-- Internet for PyPI
+------
 
-Verify Python Version is 3.6 or >2.7 and PIP is available
+## 什么是 tcf
+
+tcf 全称为 tencent cloud function，是腾讯云无服务器云函数 SCF（Serverless Cloud Function）产品的命令行工具。通过 tcf 命令行工具，您可以方便的实现函数打包、部署、本地调试，也可以方便的生成云函数的项目并基于 demo 项目进一步的开发。
+
+tcf 通过一个函数模板配置文件，完成函数及相关周边资源的描述，并基于配置文件实现本地代码及配置部署到云端的过程。
+
+目前 tcf 以开源形式发布，您可以在本项目中查看命令行源代码及更多帮助文档，并可以通过项目 issue 反馈问题。
+
+## 功能特性
+
+通过 tcf 命令行工具，你可以：
+
+* 快速初始化云函数项目
+* 在本地开发及测试你的云函数代码
+* 使用模拟的 COS、CMQ、Ckafka、API 网关等触发器事件来触发函数运行
+* 验证 TCSAM 模板配置文件
+* 打包、上传函数代码，创建函数及更新函数配置
+
+## 运行环境
+
+tcf 可以在 Windows、Linux、Mac 上运行。tcf 基于 Python 开发完成，因此在安装及运行前需要系统中安装有 Python 环境。更详细信息可见[安装及配置](https://github.com/tencentyun/tcfcli/blob/master/docs/安装及配置.md)。
+
+## 快速入门
+
+
+### 安装 tcf
+
+#### 前置依赖
+
+在安装 tcf 前，请确保系统中已经安装好了如下软件：
+
+* Python 2.7+ 或 Python 3.6+
+* pip
+
+#### 通过 pip 安装 tcf
+
+通过使用如下命令完成 tcf 安装：
+
 ```bash
-$ pip --version
+$ pip install tcf
 ```
 
-Install virtualenv(you can also use python directly, but there we recommand install virtualenv to make sure environment clean)
-```bash
-$ pip install virtualenv
-```
-
-Init develop code and env
+通过执行如下命令及输出确保 tcf 安装已成功：
 
 ```bash
-$ git clone http://git.code.oa.com/virt-plat/tcfcli.git
-$ cd tcfcli
-$ virtualenv --no-site-packages venv
-$ source venv/bin/activate
+$ tcf --version
+TCF CLI, version 0.1.0
 ```
-Now you can see **'(venv)'**  before your console, if you want quit venv use:
+
+### 配置 tcf
+
+从腾讯云控制台获取到账号的 APPID，SecretId及 SecretKey 信息，并配置到 tcf 中，作为 tcf 调用云 API 时的认证信息。
+
+例如获取到的账号 APPID 为 1253970223，SecretId 和 SecretKey 分别为 AKIxxxxxxxxxx 及 uxxlxxxxxxxx，期望在广州区使用云函数。则通过如下命令完成 tcf 的配置
+：
 ```bash
-$ (venv) deactive
+$ tcf configure set --region ap-guangzhou --appid 1253970223 --secret-id AKIxxxxxxxxxx --secret-key uxxlxxxxxxxx
 ```
 
+### 初始化模板项目
 
-### Qucick Start
+选择进入到合适的代码目录，例如 `cd ~`。
 
-Make sure you are in fam-tools directory and in the **venv** environment(if using virtualenv), then install this tool
+通过执行如下命令，创建运行环境为 Python 2.7，名称为 testscf 的项目。
+
 ```bash
-$ (venv) pip install --editable .
-eval "$(_TCF_COMPLETE=source tcf)"
+$ tcf init --runtime python2.7 --name testscf
 ```
 
-Afterwards, your command should be available
+此命令会在当前目录下创建 testscf 项目目录。
+
+### 打包项目
+
+执行 `$ cd testscf` 进入项目目录。
+
+可以通过 `ls` 命令看到，当前项目目录下包括了 README 说明文档，hello_world 代码目录，template.yaml 配置文件。
+
+通过执行如下打包命令：
+```
+$ tcf package --template-file template.yaml
+```
+
+tcf 会依据 template.yaml 文件内的描述，将 hello_world 代码目录内的代码生成部署程序包，并生成 deploy 配置文件。
+
+此时再次通过 `ls` 命令，可以看到项目目录内多了 deploy.yaml 部署用配置文件，以及类似 `32b29935-1ec1-11e9-be82-9801a7af1801.zip` 的部署包。
+
+
+### 部署云函数
+
+通过执行如下命令，完成本地代码包及函数配置部署到云端：
+
 ```bash
-$ (venv) tcf --version
-TCF, version 0.1.0
+$ tcf deploy --template-file deploy.yaml 
 ```
 
-### 调用(Invoke)
-试用版需要手动登陆镜像仓库，命令如下：
-```bash
-docker login -u 3473058547 -p qcloud6666  ccr.ccs.tencentyun.com
-```
-
-然后执行invoke，这里假设invoke的函数为模版中的function1函数
-```bash
-echo '{"key": 1}' | tcf local invoke -t demo/template.yaml function1 --skip-pull-image
-```
-
-### 模拟apigw调用(start-api)
-```bash
-tcf local start-api -t demo/template.yaml
-```
-
-### 打包(package)
-```bash
-cd demo
-tcf package -t template.yaml
-
-# 可选参数： --output-template-file, -o 设置package命令生成的部署模版路径
-#           --cos-bucket 打包后的代码同时存储至给定的cos桶中 
-``` 
-执行package命令后，会在当前目录下生成用于部署(deploy)云函数的模版文件deploy.yaml及打包好的代码文件xxx.zip
-template.yaml模版中的`./helloworld`为云函数代码目录而`index.py`为入口代码文件
-
-模版格式详细定义示例如下
-```yaml
-# template.yaml
-Resources:
-  MyFunction1: # 云函数名
-    Type: 'Tencent::Scf::Function'
-    Properties:
-      Handler: index.handler
-      Runtime: python2.7
-      CodeUri: /home/usr/code/helloworld # 也可为相对于模版文件的相对路径
-      Description: This is a template function
-      MemorySize: 256
-      Timeout: 3
-      Environment:
-        Variables:
-          ENV_FIRST: env1
-          ENV_SECOND: env2
-      VpcConfig:
-        VpcId: vpc-xxx
-        SubnetId: subnet-xxx
-      Events: # 触发器定义
-          HelloWorld1: # service_name
-              Type: Api # 类型指定我 APIGW触发器
-              Properties:
-                  Path: /hello
-                  Method: get
-                  StageName: release # new apigw default value
-                  ResponseIntegration: true # default true
-
-# Globals模块中定义的属性会被Resource模块中的属性继承
-Globals:
-  Function:
-    Timeout: 10
-```
-模版文件中的各属性含义如下
-
-| 属性 | 描述 | 类型 |
-| --------- | :--------- | :---------- |
-|Handler|入口文件和方法| String |
-|Runtime|执行时语言|String|
-|CodeUri|代码路径，本地代码所在目录|String|
-|Description|函数描述|String|
-|MemorySize|运行时内存|Int|
-|Timeout|函数执行超时时间(单位s)|Int|
-|Environment|环境变量|Map(string to string)|
-|VpcConfig|vpc配置|String|
+运行成功完成部署后，可以通过进入腾讯云云函数的控制台，检查函数是否已经成功部署。
 
 
 
-### 部署(deploy)
-执行package命令后，得到部署模版(假设为deploy.yaml)，执行如下命令即可部署代码至云函数平台
-```bash
-#第一次使用时需要输入appid、secretId等信息，按提示操作即可
-tcf deploy -t deploy.yaml
-```
+## 详细使用指导
+
+* [快速开始](https://github.com/tencentyun/tcfcli/blob/master/docs/快速开始.md)
+* [安装及配置](https://github.com/tencentyun/tcfcli/blob/master/docs/安装及配置.md)
+* [初始化示例项目](https://github.com/tencentyun/tcfcli/blob/master/docs/初始化示例项目.md)
+* [打包部署](https://github.com/tencentyun/tcfcli/blob/master/docs/打包部署.md)
+* [本地调试](https://github.com/tencentyun/tcfcli/blob/master/docs/本地调试.md)
+* [测试模板](https://github.com/tencentyun/tcfcli/blob/master/docs/测试模板.md)
+* [模板文件](https://github.com/tencentyun/tcfcli/blob/master/docs/模板文件.md)
+* [TCSAM说明](https://github.com/tencentyun/tcfcli/blob/master/docs/specs/tencentcloud%20sam%20version%202018-11-11-zh-cn.md)
+
