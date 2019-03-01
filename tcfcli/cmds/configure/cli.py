@@ -34,6 +34,9 @@ def set(**kwargs):
 
 @click.group(name='configure')
 def configure():
+    """
+    Configure your account parameters
+    """
     pass
 
 configure.add_command(get)
