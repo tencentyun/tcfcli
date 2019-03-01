@@ -33,6 +33,10 @@ setup(
     version=read_version(),
     packages=find_packages(),
     description='This is a local tools for SCF.',
+    author='Tencent Cloud',
+    url='https://github.com/tencentyun/tcfcli.git',
+    maintainer_email="qcloud_middleware@qq.com",
+    license="Apache License 2.0",
     python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*',
     entry_points={
         'console_scripts': [
