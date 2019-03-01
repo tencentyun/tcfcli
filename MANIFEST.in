@@ -1,0 +1,1 @@
+recursive-include tcfcli/cmds/local/generate_event/events *.js

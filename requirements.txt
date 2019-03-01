@@ -1,0 +1,16 @@
+certifi>=2018.4.16
+chardet>=3.0.4
+docker>=3.3.0
+click~=6.7
+Flask~=1.0.2
+cos-python-sdk-v5>=1.5.8
+dicttoxml>=1.7.4
+PyYAML>=3.12
+requests>=2.19.1
+six>=1.11.0
+urllib3>=1.23
+cookiecutter~=1.6.0
+tencentcloud-sdk-python>=3.0.30
+pathlib2~=2.3.2
+python_version<3.4
+chevron~=0.12
