@@ -18,7 +18,6 @@ Serverless 应用是由事件触发运行的应用。一个典型的 serverless 
 
 腾讯云 TCSAM 用通过 [YAML](http://yaml.org/spec/1.1/) 或 [JSON](http://www.json.org/) 格式的模板文件来描述 serverless 应用。
 
-
 - [资源类型](#资源类型)
 - [事件源类型](#事件源类型)
 - [属性类型](#属性类型)
