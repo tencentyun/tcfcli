@@ -1,6 +1,9 @@
 import click
+import platform
 from tcfcli.common.user_config import UserConfig
-
+version = platform.python_version()
+if version >= '3':
+    from functools import reduce
 
 @click.command()
 @click.option('--secret-id', is_flag=True, help="TencentCloudAPI  SecretId")
@@ -13,7 +16,7 @@ def get(**kwargs):
         kwargs[k] = True
     bools = [v for k, v in kwargs.items()]
     if not reduce(lambda x, y: bool(x or y), bools):
-        map(set_true, kwargs)
+        list(map(set_true, kwargs))
     attrs = uc.get_attrs(kwargs)
     msg = "{} config:\n".format(UserConfig.API)
     for attr in sorted(attrs):

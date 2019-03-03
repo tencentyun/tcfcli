@@ -31,10 +31,10 @@ class UserConfig(object):
     API = "API"
 
     def __init__(self):
-        self.secret_id = None
-        self.secret_key = None
-        self.region = None
-        self.appid = None
+        self.secret_id = 'None'
+        self.secret_key = 'None'
+        self.region = 'None'
+        self.appid = 'None'
         self._load_config()
 
     def set_attrs(self, attrs):
@@ -47,7 +47,7 @@ class UserConfig(object):
         ret = {}
         for attr in [ k for k, v in attrs.items() if v]:
             obj = self._name_attr2obj(attr)
-            if objs.has_key(obj):
+            if obj in objs:
                 ret[self._name_obj2attr(attr)] = objs[obj]
         return ret
 
