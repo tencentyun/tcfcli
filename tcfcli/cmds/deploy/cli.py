@@ -50,8 +50,9 @@ class Deploy(object):
         """
         err = ScfClient().deploy(func)
         if err is not None:
-            click.secho("Deploy  function '{}' failure. Error: {} RequestId: {}".format(func.name,
-                                                            err.get_message().encode("UTF-8"),
-                                                            err.get_request_id().encode("UTF-8")), fg="red")
+            click.secho("Deploy  function '{}' failure. Error: {}.".format(func.name,
+                                                            err.get_message().encode("UTF-8")), fg="red")
+            if err.get_request_id():
+                click.secho("RequestId: {}".format(err.get_request_id().encode("UTF-8")), fg="red")
         else:
             click.secho("Deploy  function '{}' success".format(func.name), fg="green")
