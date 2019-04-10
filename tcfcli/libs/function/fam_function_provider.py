@@ -39,8 +39,8 @@ class ScfFunctionProvider(FunctionProvider):
     @staticmethod
     def get_final_template(template_dict):
         template_dict = template_dict or {}
-        if template_dict:
-            template_dict = TemplateReimplemented(template_dict).parse()
+        # if template_dict:
+        #    template_dict = TemplateReimplemented(template_dict).parse()
         return template_dict
 
     @staticmethod

@@ -11,8 +11,9 @@ STD_IN = '-'
 @click.option('--event', '-e', type=click.Path(), default=STD_IN)
 @click.option('--no-event', is_flag=True, default=False)
 @invoke_common_options
+@click.argument('namespace_identifier', required=False, default='default')
 @click.argument('function_identifier', required=False)
-def invoke(template, function_identifier, event, no_event, env_vars, debug_port, debug_args, debugger_path,
+def invoke(template, namespace_identifier, function_identifier, event, no_event, env_vars, debug_port, debug_args, debugger_path,
            docker_volume_basedir, docker_network, log_file, skip_pull_image, region):
     '''
     \b
@@ -22,11 +23,11 @@ def invoke(template, function_identifier, event, no_event, env_vars, debug_port,
         \b
         $ tcf local invoke -t template.yaml
     '''
-    do_invoke(template, function_identifier, event, no_event, env_vars, debug_port, debug_args, debugger_path,
+    do_invoke(template, namespace_identifier, function_identifier, event, no_event, env_vars, debug_port, debug_args, debugger_path,
               docker_volume_basedir, docker_network, log_file, skip_pull_image, region)
 
 
-def do_invoke(template, function_identifier, event, no_event, env_vars, debug_port, debug_args, debugger_path,
+def do_invoke(template, namespace_identifier, function_identifier, event, no_event, env_vars, debug_port, debug_args, debugger_path,
               docker_volume_basedir, docker_network, log_file, skip_pull_image, region):
 
     if no_event and event != STD_IN:
@@ -48,7 +49,8 @@ def do_invoke(template, function_identifier, event, no_event, env_vars, debug_po
                            docker_network=docker_network,
                            log_file=log_file,
                            skip_pull_image=skip_pull_image,
-                           region=region) as context:
+                           region=region,
+                           namespace=namespace_identifier) as context:
 
             context.local_runtime_manager.invoke(context.functions_name, event_data, context.stdout, context.stderr)
 

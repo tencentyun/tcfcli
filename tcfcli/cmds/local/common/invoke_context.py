@@ -5,6 +5,7 @@ import os
 
 from tcfcli.libs.function.context import Context as FuncContext
 from tcfcli.libs.function.fam_function_provider import ScfFunctionProvider
+from tcfcli.libs.tcsam.tcsam import Resources
 from tcfcli.common.user_exceptions import InvokeContextException
 from tcfcli.cmds.local.libs.local.local_runtime_manager import LocalRuntimeManager
 
@@ -21,7 +22,8 @@ class InvokeContext(object):
                  docker_network=None,
                  log_file=None,
                  skip_pull_image=None,
-                 region=None):
+                 region=None,
+                 namespace=None):
 
         self._template_file = template_file
         self._function_identifier = function_identifier
@@ -34,6 +36,7 @@ class InvokeContext(object):
         self._log_file = log_file
         self._skip_pull_image = skip_pull_image
         self._region = region
+        self.namespace = namespace
 
         self._template_dict = None
         self._function_provider = None
@@ -42,7 +45,14 @@ class InvokeContext(object):
         self._debug_context = None
 
     def __enter__(self):
-        self._template_dict = FuncContext().get_template_data(self._template_file)
+        template_dict = Resources(FuncContext().get_template_data(self._template_file)).to_json()
+        resource = template_dict.get("Resources", {})
+        ns = resource.get(self.namespace, {})
+        if not ns:
+            raise InvokeContextException("You must provide a namespace identifier,default is 'default'")
+        if ns.has_key("Type"):
+            del ns["Type"]
+        self._template_dict = {"Resources": ns}
         self._function_provider = ScfFunctionProvider(template_dict=self._template_dict)
         self._env_vars = self._get_env_vars(self._env_vars_file)
         self._log_file_fp = self._get_log_file(self._log_file)

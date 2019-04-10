@@ -1,3 +1,5 @@
+import click
+import json
 from tencentcloud.common import credential
 from tencentcloud.common.profile.client_profile import ClientProfile
 from tencentcloud.common.exception.tencent_cloud_sdk_exception import TencentCloudSDKException
@@ -21,92 +23,125 @@ class ScfClient(object):
         resp = self._client.GetFunction(req)
         return resp.to_json_string()
 
-    def create_function(self, function_name=None, handler=None, description=None, zip_file=None,
-                        cos_bucket_name=None, cos_object_name=None, memory_size=None,
-                        timeout=None, runtime=None, environment=None, vpc=None):
-        req = models.CreateFunctionRequest()
-        req.FunctionName = function_name
-        req.Handler = handler
-        req.Description = description
-        req.MemorySize = memory_size
-        req.Timeout = timeout
-        req.Runtime = runtime
-        req.Environment = environment
-        req.VpcConfig = vpc
-        code = models.Code()
-        code.CosBucketName = cos_bucket_name
-        code.CosObjectName = cos_object_name
-        if zip_file:
-            with open(zip_file, 'rb') as f:
-                code.ZipFile = base64.b64encode(f.read()).decode('utf-8')
-        req.Code = code
-        resp = self._client.CreateFunction(req)
-        return resp.to_json_string()
-
-    def update_function_code(self, function_name=None, handler=None,
-                             cos_bucket_name=None, cos_object_name=None, zip_file=None):
+    def update_func_code(self, func, func_name, func_ns):
         req = models.UpdateFunctionCodeRequest()
-        req.FunctionName = function_name
-        req.Handler = handler
-        req.CosBucketName = cos_bucket_name
-        req.CosObjectName = cos_object_name
-        if zip_file:
-            with open(zip_file, 'rb') as f:
-                req.ZipFile = base64.b64encode(f.read()).decode('utf-8')
+        req.Namespace = func_ns
+        req.FunctionName = func_name
+        req.Handler = getattr(func, "Handler", None)
+        req.ZipFile = self._model_zip_file(getattr(func, "LocalZipFile", None))
+        req.CosBucketName = getattr(func, "CosBucketName", None)
+        req.CosObjectName = getattr(func, "CosObjectName", None)
         resp = self._client.UpdateFunctionCode(req)
         return resp.to_json_string()
 
-    def update_function_configuration(self, function_name=None, description=None, memory_size=None, timeout=None,
-                                      runtime=None, environment=None, vpc=None):
+    def update_func_config(self, func, func_name, func_ns):
         req = models.UpdateFunctionConfigurationRequest()
-        req.FunctionName = function_name
-        req.Description = description
-        req.MemorySize = memory_size
-        req.Timeout = timeout
-        req.Runtime = runtime
-        req.Environment = environment
-        req.VpcConfig = vpc
+        req.Namespace = func_ns
+        req.FunctionName = func_name
+        req.Description = getattr(func, "Description", None)
+        req.MemorySize = getattr(func, "MemorySize", None)
+        req.Timeout = getattr(func, "Timeout", None)
+        req.Runtime = getattr(func, "Runtime", None)
+        req.Environment = self._model_envs(getattr(func, "Environment", None))
+        req.VpcConfig = self._model_vpc(getattr(func, "VpcConfig", None))
         resp = self._client.UpdateFunctionConfiguration(req)
         return resp.to_json_string()
 
-    def deploy(self, func):
-        envs = self._array_envs(func.environment)
+    def create_func(self, func, func_name, func_ns):
+        req = models.CreateFunctionRequest()
+        req.Namespace =  func_ns
+        req.FunctionName = func_name
+        req.Handler = getattr(func, "Handler", None)
+        req.Description = getattr(func, "Description", None)
+        req.MemorySize = getattr(func, "MemorySize", None)
+        req.Timeout = getattr(func, "Timeout", None)
+        req.Runtime = getattr(func,"Runtime", None)
+        req.Environment = self._model_envs(getattr(func, "Environment", None))
+        req.VpcConfig = self._model_vpc(getattr(func, "VpcConfig", None))
+        req.Code = self._model_code(getattr(func, "LocalZipFile", None),
+                                    getattr(func, "CosBucketName", None),
+                                    getattr(func, "CosObjectName", None))
+        resp = self._client.CreateFunction(req)
+        return resp.to_json_string()
 
+    def deploy_func(self, func, func_name, func_ns, forced):
         try:
-            self.create_function(function_name=func.name, handler=func.handler, description=func.description,
-                                 zip_file=func.zip_file, cos_bucket_name=func.cos_bucket_name,
-                                 cos_object_name=func.cos_object_name, memory_size=func.memory, timeout=func.timeout,
-                                 runtime=func.runtime, environment=envs, vpc=func.vpc)
+            self.create_func(func, func_name, func_ns)
+            return
         except TencentCloudSDKException as err:
-            if err.code == "ResourceInUse.FunctionName":
+            if err.code == "ResourceInUse.FunctionName" and forced:
                 pass
             else:
                 return err
-
+        click.secho("{ns} {name} already exists, update it now".format(ns=func_ns, name=func_name), fg="red")
         try:
-            self.update_function_code(function_name=func.name, handler=func.handler,
-                                      cos_bucket_name=func.cos_bucket_name,
-                                      cos_object_name=func.cos_object_name, zip_file=func.zip_file)
-            self.update_function_configuration(function_name=func.name, description=func.description,
-                                               memory_size=func.memory, timeout=func.timeout, runtime=func.runtime,
-                                               environment=envs, vpc=func.vpc)
+            self.update_func_code(func, func_name, func_ns)
+            self.update_func_config(func, func_name, func_ns)
+        except TencentCloudSDKException as err:
+            return err
+        return
+
+    def create_trigger(self, trigger, name, func_name, func_ns):
+        req = models.CreateTriggerRequest()
+        req.Namespace = func_ns
+        req.FunctionName = func_name
+        req.TriggerName = name
+        req.Type = trigger.__class__.__name__.lower()
+        trigger_desc = trigger.trigger_desc()
+        if isinstance(trigger_desc, dict):
+            trigger_desc = json.dumps(trigger_desc, separators=(',', ':'))
+        req.TriggerDesc = trigger_desc
+        req.Enable = getattr(trigger, "Enable", "OPEN")
+        resp = self._client.CreateTrigger(req)
+        click.secho(resp.to_json_string())
+
+    def deploy_trigger(self, trigger, name, func_name, func_ns):
+        try:
+            self.create_trigger(trigger, name, func_name, func_ns)
         except TencentCloudSDKException as err:
             return err
 
-        return
+    def deploy(self, func, func_name, func_ns, forced):
+        err = self.deploy_func(func, func_name, func_ns, forced)
+        if err:
+            return err
 
     @staticmethod
-    def _array_envs(environment):
-        if not environment:
+    def _model_envs(environment):
+        if environment is None:
             return None
-
-        envs = environment.get('Variables', None)
-        if not isinstance(envs, dict):
-            raise TypeError('environment format in template is invalid')
-
         envs_array = []
-        for k, v in envs.items():
-            envs_array.append({'Key': k, 'Value': v})
+        for k, v in vars(environment).items():
+            var = models.Variable()
+            var.Key = k
+            var.Value = v
+            envs_array.append(var)
+        envi = models.Environment()
+        envi.Variables = envs_array
+        return envi
 
-        return {'Variables': envs_array}
+    @staticmethod
+    def _model_vpc(vpc_config):
+        if vpc_config:
+            vpc = models.VpcConfig()
+            vpc.VpcId = vpc_config.get("VpcId", None)
+            vpc.SubnetId = vpc_config.get("SubnetId", None)
+            return vpc
+        return None
 
+    @staticmethod
+    def _model_code(zip_file, cos_buk_name, cos_obj_name):
+        code = models.Code()
+        code.CosBucketName = cos_buk_name
+        code.CosObjectName = cos_obj_name
+        if zip_file:
+            with open(zip_file, 'rb') as f:
+                code.ZipFile = base64.b64encode(f.read()).decode('utf-8')
+        return code
+
+    @staticmethod
+    def _model_zip_file(zip_file):
+        if zip_file:
+            with open(zip_file, 'rb') as f:
+                return base64.b64encode(f.read()).decode('utf-8')
+        return None

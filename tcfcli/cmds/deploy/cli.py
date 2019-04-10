@@ -2,57 +2,64 @@ import click
 from tcfcli.libs.function.context import Context
 from tcfcli.common.user_exceptions import TemplateNotFoundException, InvalidTemplateException
 from tcfcli.libs.utils.scf_client import ScfClient
+from tcfcli.libs.tcsam.tcsam import Resources
 
 
 @click.command()
 @click.option('--template-file', '-t', type=click.Path(exists=True), help="TCF template file for deploy")
-def deploy(template_file):
+@click.option('-f', '--forced', is_flag=True, default=False,
+              help="Update the function when it already exists,default false")
+def deploy(template_file, forced):
     '''
     Deploy a scf.
     '''
-    Deploy.check_params(template_file)
-
-    try:
-        with Context(template_file=template_file) as deploy_ctx:
-            Deploy(deploy_ctx).do_deploy()
-    except InvalidTemplateException as e:
-        raise e
+    deploy = Deploy(template_file, forced)
+    deploy.do_deploy()
 
 
 class Deploy(object):
-    def __init__(self, deploy_ctx):
-        self._deploy_ctx = deploy_ctx
+    def __init__(self, template_file, forced=False):
+        self.template_file = template_file
+        self.check_params()
+        self.resource = Resources(Context.get_template_data(self.template_file))
+        self.forced = forced
 
     def do_deploy(self):
-        for func in self._deploy_ctx.get_functions():
-            self._do_deploy_core(func)
+        for ns_name, ns in vars(self.resource).items():
+            click.secho("deploy {ns} begin".format(ns=ns_name))
+            for func_name, func in vars(ns).items():
+                self._do_deploy_core(func, func_name, ns_name, self.forced)
+            click.secho("deploy {ns} end".format(ns=ns_name))
 
-    @staticmethod
-    def check_params(template_file):
-        if not template_file:
+    def check_params(self):
+        if not self.template_file:
             click.secho("FAM Template Not Found", fg="red")
-            raise TemplateNotFoundException("Missing option --template-file".format(template_file))
+            raise TemplateNotFoundException("Missing option --template-file".format(self.template_file))
 
-    @staticmethod
-    def _do_deploy_core(func):
-        """
-        :param func: Function namedtuple containing the function information.
-                     Example: Function = namedtuple("Function", [
-                                                    "name",
-                                                    "runtime",
-                                                    "memory",
-                                                    "timeout",
-                                                    "handler",
-                                                    "codeuri",
-                                                    "environment",
-                                                    "vpc",
-                                                ])
-        """
-        err = ScfClient().deploy(func)
+    def _do_deploy_core(self, func, func_name, func_ns, forced):
+        err = ScfClient().deploy_func(func, func_name, func_ns, forced)
         if err is not None:
-            click.secho("Deploy  function '{}' failure. Error: {}.".format(func.name,
-                                                            err.get_message().encode("UTF-8")), fg="red")
+            click.secho("Deploy function '{name}' failure. Error: {e}.".format(name=func_name,
+                                                            e=err.get_message().encode("UTF-8")), fg="red")
             if err.get_request_id():
                 click.secho("RequestId: {}".format(err.get_request_id().encode("UTF-8")), fg="red")
-        else:
-            click.secho("Deploy  function '{}' success".format(func.name), fg="green")
+            return
+
+        click.secho("Deploy function '{name}' success".format(name=func_name), fg="green")
+        self._do_deploy_trigger(func, func_name, func_ns)
+
+    def _do_deploy_trigger(self, func, func_name, func_ns):
+        events = getattr(func, "Events", None)
+        if events is None:
+            return
+        for name, trigger in vars(events).items():
+            err = ScfClient().deploy_trigger(trigger, name, func_name, func_ns)
+            if err is not None:
+                click.secho(
+                    "Deploy trigger '{name}' failure. Error: {e}.".format(name=name,
+                                                            e=err.get_message().encode("UTF-8")), fg="red")
+                if err.get_request_id():
+                    click.secho("RequestId: {}".format(err.get_request_id().encode("UTF-8")), fg="red")
+                continue
+            click.secho("Deploy trigger '{name}' success".format(name=name),fg="green")
+

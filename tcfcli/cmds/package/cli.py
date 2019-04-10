@@ -1,4 +1,5 @@
 import os
+import copy
 import click
 import uuid
 from zipfile import ZipFile, ZIP_DEFLATED
@@ -8,6 +9,7 @@ from tcfcli.libs.function.context import Context
 from tcfcli.libs.utils.cos_client import CosClient
 from tcfcli.common.user_exceptions import TemplateNotFoundException, \
     InvalidTemplateException, ContextException
+from tcfcli.libs.tcsam.tcsam import Resources
 
 _DEFAULT_OUT_TEMPLATE_FILE = "deploy.yaml"
 _CURRENT_DIR = '.'
@@ -25,61 +27,55 @@ def package(template_file, cos_bucket, output_template_file):
     '''
     Package a scf and upload to the cos
     '''
-    Package.check_params(template_file)
-
-    try:
-        with Context(template_file=template_file, cos_bucket=cos_bucket, output_template_file=output_template_file) \
-                as pkg_ctx:
-            Package(pkg_ctx).do_package()
-    except InvalidTemplateException as e:
-        raise e
+    package = Package(template_file, cos_bucket, output_template_file)
+    package.do_package()
 
 
 class Package(object):
-    def __init__(self, pkg_ctx):
-        self._pkg_ctx = pkg_ctx
-        self._template_path = pkg_ctx.template_path
-        self._cwd = self._get_cwd()
+
+    def __init__(self, template_file, cos_bucket, output_template_file):
+        self.template_file = template_file
+        self.cos_bucket = cos_bucket
+        self.output_template_file = output_template_file
+        self.check_params()
+        self.resource = Resources(Context.get_template_data(self.template_file))
 
     def do_package(self):
-        deploy_template_dict = self._pkg_ctx.deploy_template
-        deploy_file_path = self._pkg_ctx.output_template_file_path
+        for ns_name, ns in vars(self.resource).items():
+            for func_name, func in vars(ns).items():
+                code_url = self._do_package_core(getattr(func, "CodeUri", ""))
+                if "cos_bucket_name" in code_url:
+                    setattr(func, "CosBucketName", code_url["cos_bucket_name"])
+                    setattr(func, "CosObjectName", code_url["CosObjectName"])
+                    click.secho("Upload function zip file '{}' to COS bucket '{}' success".
+                                format(os.path.basename(code_url["cos_object_name"]),
+                                       code_url["cos_bucket_name"]), fg="green")
+                elif "zip_file" in code_url:
+                    setattr(func, "LocalZipFile", code_url["zip_file"])
 
-        for func in self._pkg_ctx.get_functions():
-            code_url = self._do_package_core(func)
-            if "cos_bucket_name" in code_url:
-                deploy_template_dict["Resources"][func.name]["Properties"]["CosBucketName"] = code_url["cos_bucket_name"]
-                deploy_template_dict["Resources"][func.name]["Properties"]["CosObjectName"] = code_url["cos_object_name"]
-                click.secho("Upload function zip file '{}' to COS bucket '{}' success".
-                            format(os.path.basename(code_url["cos_object_name"]),
-                                   code_url["cos_bucket_name"]), fg="green")
-            elif "zip_file" in code_url:
-                deploy_template_dict["Resources"][func.name]["Properties"]["LocalZipFile"] = code_url["zip_file"]
-        yaml_dump(deploy_template_dict, deploy_file_path)
-        click.secho("Generate deploy file '{}' success".format(deploy_file_path), fg="green")
+        yaml_dump(self.resource.to_json(), self.output_template_file)
+        click.secho("Generate deploy file '{}' success".format(self.output_template_file), fg="green")
 
-    @staticmethod
-    def check_params(template_file):
-        if not template_file:
+    def check_params(self):
+        if not self.template_file:
             click.secho("FAM Template Not Found", fg="red")
-            raise TemplateNotFoundException("Missing option --template-file".format(template_file))
+            raise TemplateNotFoundException("Missing option --template-file".format(self.template_file))
 
-    def _do_package_core(self, func_config):
-        zipfile, zip_file_name = self._zip_func(func_config)
+    def _do_package_core(self, func_path):
+        zipfile, zip_file_name = self._zip_func(func_path)
         code_url = dict()
-        if self._pkg_ctx.cos_bucket:
-            CosClient().upload_file2cos(bucket=self._pkg_ctx.cos_bucket, file=zipfile.read(),
+        if self.cos_bucket:
+            CosClient().upload_file2cos(bucket=self.cos_bucket, file=zipfile.read(),
                                         key=zip_file_name)
-            code_url["cos_bucket_name"] = self._pkg_ctx.cos_bucket
+            code_url["cos_bucket_name"] = self.cos_bucket
             code_url["cos_object_name"] = "/" + zip_file_name
         else:
             code_url["zip_file"] = os.path.join(os.getcwd(), zip_file_name)
 
         return code_url
 
-    def _zip_func(self, func_config):
+    def _zip_func(self, func_path):
         buff = BytesIO()
-        func_path = self._get_code_abs_path(func_config.codeuri)
         if not os.path.exists(func_path):
             raise ContextException("Function file or path not found by CodeUri '{}'".format(func_path))
 

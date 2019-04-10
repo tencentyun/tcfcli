@@ -37,7 +37,7 @@ GlobalsKey = ("Handler",
               "Environment",
               "VpcConfig")
 
-TENCENT_FUNCTION_TYPE = "TencentCloud::Scf::Function"
+TENCENT_FUNCTION_TYPE = "TencentCloud::Serverless::Function"
 
 
 class FunctionProvider(object):
