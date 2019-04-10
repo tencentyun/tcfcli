@@ -19,6 +19,7 @@ from tcfcli.cmds.deploy.cli import deploy
 from tcfcli.cmds.package.cli import package
 from tcfcli.cmds.local.cli import local
 from tcfcli.cmds.init.cli import init
+from tcfcli.cmds.validate.cli import validate
 from tcfcli.cmds.configure.cli import configure
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
@@ -38,6 +39,7 @@ cli.add_command(deploy)
 cli.add_command(local)
 cli.add_command(init)
 cli.add_command(configure)
+cli.add_command(validate)
 
 if __name__ == "__main__":
     cli()
