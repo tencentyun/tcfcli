@@ -15,3 +15,10 @@
 
 解决方法： pip install -I PyYAML==x.x.x(在requirements.txt中查看具体版本)
 
+## 使用问题
+
+### yaml 配置文件内有多个函数描述时，如何指定函数进行本地调试
+
+表现：Error: You must provide a function identifier (function's Logical ID in the template). Possible options in your template: ['xxxB', 'xxxA']
+
+解决方法：调用 local invoke 命令时带有函数名，如 tcf local invoke -t template.yaml xxxA
