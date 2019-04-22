@@ -6,8 +6,10 @@ import os
 from tcfcli.libs.function.context import Context as FuncContext
 from tcfcli.libs.function.fam_function_provider import ScfFunctionProvider
 from tcfcli.libs.tcsam.tcsam import Resources
+from tcfcli.libs.tcsam import model
 from tcfcli.common.user_exceptions import InvokeContextException
 from tcfcli.cmds.local.libs.local.local_runtime_manager import LocalRuntimeManager
+from tcfcli.cmds.local.libs.local.debug_context import DebugContext
 
 
 class InvokeContext(object):
@@ -46,13 +48,13 @@ class InvokeContext(object):
 
     def __enter__(self):
         template_dict = Resources(FuncContext().get_template_data(self._template_file)).to_json()
-        resource = template_dict.get("Resources", {})
+        resource = template_dict.get(model.RESOURCE, {})
         ns = resource.get(self.namespace, {})
         if not ns:
             raise InvokeContextException("You must provide a namespace identifier,default is 'default'")
-        if ns.has_key("Type"):
-            del ns["Type"]
-        self._template_dict = {"Resources": ns}
+        if model.TYPE in ns:
+            del ns[model.TYPE]
+        self._template_dict = {model.RESOURCE: ns}
         self._function_provider = ScfFunctionProvider(template_dict=self._template_dict)
         self._env_vars = self._get_env_vars(self._env_vars_file)
         self._log_file_fp = self._get_log_file(self._log_file)
@@ -146,7 +148,7 @@ class InvokeContext(object):
 
     @staticmethod
     def _get_debug_context(debug_port, debug_paras, debugger_path):
-        return None
+        return DebugContext(debug_port, debugger_path, debug_paras)
 
     @staticmethod
     def _check_docker(docker_client=None):

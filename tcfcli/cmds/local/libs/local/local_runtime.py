@@ -5,6 +5,7 @@ import shutil
 import tempfile
 import zipfile
 import click
+import signal
 import threading
 from contextlib import contextmanager
 
@@ -51,6 +52,8 @@ class LocalRuntime(object):
         code_abs_path = self.get_code_abs_path()
         memory = self.get_memory()
         entry = self.get_entry_point()
+        ports ={self._debug_options.debug_port: self._debug_options.debug_port} \
+            if self._debug_options else None
         envs = self.get_envs(event)
         timer = None
 
@@ -61,17 +64,20 @@ class LocalRuntime(object):
                                         host_dir=code_dir,
                                         mem=memory,
                                         env_vars=envs,
-                                        entrypoint=entry)
+                                        entrypoint=entry,
+                                        ports=ports)
 
             try:
                 self._container_manager.run(self._container)
 
-                timer = self._wait_timeout(self._container, self.get_timeout())
+                timer = self._wait_timeout(self._container, self.get_timeout(), bool(self._debug_options))
 
                 self._container.get_logs(stdout=stdout, stderr=stderr)
 
             except KeyboardInterrupt:
                 click.secho('Abort function execution')
+            except Exception as err:
+                click.secho('Invoke error:%s' % str(err))
 
             finally:
                 if timer:
@@ -109,8 +115,43 @@ class LocalRuntime(object):
     def get_entry_point(self):
         if not self._debug_options:
             return None
-        # TODO: debug support
-        return None
+
+        runtime = self.get_runtime()
+        if runtime not in ["nodejs6.10", "nodejs8.9"]:
+            raise InvalidEnvParameters("Debugging is not currently supported for {}".format(runtime))
+
+        debug_port = self._debug_options.debug_port
+        debug_args = self._debug_options.debug_args
+        debug_args_list = []
+        if debug_args:
+            debug_args_list = debug_args.split(" ")
+
+        entrypoint = None
+        if runtime == "nodejs6.10":
+            entrypoint = ["/var/lang/node6/bin/node"] \
+                   + debug_args_list \
+                   + [
+                       "--inspect",
+                       "--debug-brk=" + str(debug_port),
+                       "--nolazy",
+                       "--max-old-space-size=2547",
+                       "--max-semi-space-size=150",
+                       "--max-executable-size=160",
+                       "--expose-gc",
+                       "/var/runtime/node6/bootstrap.js",
+                   ]
+        elif runtime == "nodejs8.9":
+            entrypoint = ["/var/lang/node8/bin/node"] \
+                    + debug_args_list \
+                    + [
+                        "--inspect-brk=0.0.0.0:" + str(debug_port),
+                        "--nolazy",
+                        "--expose-gc",
+                        "--max-semi-space-size=150",
+                        "--max-old-space-size=2707",
+                        "/var/runtime/node8/bootstrap.node8.js",
+                    ]
+        return entrypoint
 
     def get_code_abs_path(self):
         # return the code path based on current working directory
@@ -216,13 +257,20 @@ class LocalRuntime(object):
             for file in f.namelist():
                 f.extract(file, target_dir)
 
-    def _wait_timeout(self, container=None, timeout=None):
+    def _wait_timeout(self, container=None, timeout=None, isdebug=False):
         if not timeout:
             timeout = 3
+
+        def signal_handler(sig, frame):
+            container.delete()
 
         def stop_container():
             click.secho('Function "%s" timeout after %d seconds' % (self.get_func_name(), timeout))
             container.delete()
+
+        if isdebug:
+            signal.signal(signal.SIGTERM, signal_handler)
+            return
 
         timer = threading.Timer(timeout, stop_container)
         timer.start()

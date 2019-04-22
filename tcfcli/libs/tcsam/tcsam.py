@@ -74,7 +74,7 @@ class Function(ProperModel):
     def __init__(self, model, dft):
         if not isinstance(dft, dict):
             raise InvalidTemplateException("Globals invalid")
-        if dft.has_key(FUNCTION):
+        if FUNCTION in dft:
             if not isinstance(dft[FUNCTION], dict):
                 raise InvalidTemplateException("Globals invalid")
             for proper in dft[FUNCTION]:
@@ -106,6 +106,8 @@ class Resources(TypeModel):
         if not isinstance(model, dict):
             raise InvalidTemplateException("%s invalid" % self.__class__.__name__)
         resource = model.get("Resources", {})
+        if not resource:
+            raise InvalidTemplateException("Resources not found")
         glo = model.get("Globals", {})
         if not isinstance(resource, dict) or not isinstance(glo, dict):
             raise InvalidTemplateException("%s invalid" % self.__class__.__name__)

@@ -40,5 +40,4 @@ class LocalRuntimeManager(object):
 
     @property
     def debug_options(self):
-        # TODO: support debugger
-        return None
+        return self._debug_context

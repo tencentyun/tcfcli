@@ -39,7 +39,7 @@ class ProperModel(Model):
     }
 
     def __init__(self, model):
-        if not isinstance(model, dict) or not model.has_key(PROPERTY):
+        if not isinstance(model, dict) or PROPERTY not in model:
             raise InvalidTemplateException("%s invalid" % PROPERTY)
         if not isinstance(model[PROPERTY], dict):
             if model[PROPERTY] is None:
@@ -48,7 +48,7 @@ class ProperModel(Model):
                 raise InvalidTemplateException("%s invalid" % PROPERTY)
 
         for m in model[PROPERTY]:
-            if not self.PROPER.has_key(m):
+            if m not in self.PROPER:
                 raise InvalidTemplateException("%s invalid" % m)
             try:
                 setattr(self, m, self.PROPER[m][TYPE](model[PROPERTY][m]))
@@ -76,11 +76,11 @@ class TypeModel(Model):
             raise InvalidTemplateException("invalid")
         for m in model:
             mod = model[m]
-            if not isinstance(mod, dict) or not mod.has_key(TYPE):
+            if not isinstance(mod, dict) or TYPE not in mod:
                 raise InvalidTemplateException("%s invalid" % m)
             type = mod[TYPE]
             del mod[TYPE]
-            if not self.AVA_TYPE.has_key(type):
+            if type not in self.AVA_TYPE:
                 raise InvalidTemplateException("%s invalid" % m)
             try:
                 setattr(self, m, self.AVA_TYPE[type](mod, dft))
