@@ -1,4 +1,5 @@
 import click
+import sys
 from tcfcli.libs.function.context import Context
 from tcfcli.common.user_exceptions import TemplateNotFoundException, InvalidTemplateException
 from tcfcli.libs.utils.scf_client import ScfClient
@@ -39,8 +40,12 @@ class Deploy(object):
     def _do_deploy_core(self, func, func_name, func_ns, forced):
         err = ScfClient().deploy_func(func, func_name, func_ns, forced)
         if err is not None:
+            if sys.version_info[0] == 3:
+                s = err.get_message()
+            else:
+                s = err.get_message().encode("UTF-8")
             click.secho("Deploy function '{name}' failure. Error: {e}.".format(name=func_name,
-                                                            e=err.get_message().encode("UTF-8")), fg="red")
+                                                            e=s), fg="red")
             if err.get_request_id():
                 click.secho("RequestId: {}".format(err.get_request_id().encode("UTF-8")), fg="red")
             return
@@ -55,9 +60,14 @@ class Deploy(object):
         for name, trigger in vars(events).items():
             err = ScfClient().deploy_trigger(trigger, name, func_name, func_ns)
             if err is not None:
+                if sys.version_info[0] == 3:
+                    s = err.get_message()
+                else:
+                    s = err.get_message().encode("UTF-8")
+
                 click.secho(
                     "Deploy trigger '{name}' failure. Error: {e}.".format(name=name,
-                                                            e=err.get_message().encode("UTF-8")), fg="red")
+                                                            e=s), fg="red")
                 if err.get_request_id():
                     click.secho("RequestId: {}".format(err.get_request_id().encode("UTF-8")), fg="red")
                 continue
