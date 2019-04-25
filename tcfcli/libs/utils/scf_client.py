@@ -69,7 +69,7 @@ class ScfClient(object):
             self.create_func(func, func_name, func_ns)
             return
         except TencentCloudSDKException as err:
-            if err.code == "ResourceInUse.FunctionName" and forced:
+            if err.code == "ResourceInUse.Function" and forced:
                 pass
             else:
                 return err
