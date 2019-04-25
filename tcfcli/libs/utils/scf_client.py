@@ -69,14 +69,14 @@ class ScfClient(object):
             self.create_func(func, func_name, func_ns)
             return
         except TencentCloudSDKException as err:
-            if err.code == "ResourceInUse.Function" and forced:
+            if err.code in ["ResourceInUse.Function", "ResourceInUse.FunctionName"] and forced:
                 pass
             else:
                 return err
         click.secho("{ns} {name} already exists, update it now".format(ns=func_ns, name=func_name), fg="red")
         try:
-            self.update_func_code(func, func_name, func_ns)
             self.update_func_config(func, func_name, func_ns)
+            self.update_func_code(func, func_name, func_ns)
         except TencentCloudSDKException as err:
             return err
         return
