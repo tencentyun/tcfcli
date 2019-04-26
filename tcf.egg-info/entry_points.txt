@@ -1,0 +1,3 @@
+[console_scripts]
+tcf = tcfcli.cmds.cli.cli:cli
+
