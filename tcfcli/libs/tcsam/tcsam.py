@@ -16,7 +16,7 @@ class Function(ProperModel):
             MUST: True,
             TYPE: mstr,
             VALUE: ("Python2.7", "Python3.6", "Nodejs6.10", "Nodejs8.9",
-                    "PHP5", "PHP7", "Go1", "Java8")
+                    "Php5", "Php7", "Go1", "Java8")
         },
         "CodeUri": {
             MUST: False,
