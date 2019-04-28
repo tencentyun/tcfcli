@@ -61,7 +61,7 @@ Globals:
         DB_NAME: mydb
 ```
 
-### Resource 类型
+### 类型
 
 - [TencentCloud::Serverless::Namespace](#tencentcloudserverlessnamespace)
   - [TencentCloud::Serverless::Function](#tencentcloudserverlessfunction)
@@ -94,9 +94,9 @@ VpcConfig | [VPC配置对象](#Vpc配置对象) | 用于配置云函数访问 VP
 
 ```yaml
 
-ProjectTest: # namespace name
+ProjectTest: # 命名空间名称
   Type: 'TencentCloud::Serverless::Namespace'
-  TestFunction: # function name
+  TestFunction: # 函数名
     Type: 'TencentCloud::Serverless::Function'
     Properties:
       Handler: index.handler
@@ -232,7 +232,7 @@ Properties:
   Enable: true
 ```
 
-### Property 类型
+### 属性类型
 
 - [事件源对象](#事件源对象)
 - [VPC 配置对象](#Vpc配置对象)
