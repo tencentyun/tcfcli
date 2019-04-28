@@ -57,6 +57,7 @@ TCF CLI, version 0.1.0
 
 例如获取到的账号 APPID 为 1253970223，SecretId 和 SecretKey 分别为 AKIxxxxxxxxxx 及 uxxlxxxxxxxx，期望在广州区使用云函数。则通过如下命令完成 tcf 的配置
 ：
+
 ```bash
 $ tcf configure set --region ap-guangzhou --appid 1253970223 --secret-id AKIxxxxxxxxxx --secret-key uxxlxxxxxxxx
 ```
@@ -104,7 +105,7 @@ $ tcf deploy --template-file deploy.yaml
 ## 详细使用指导
 
 * [快速开始](https://github.com/tencentyun/tcfcli/blob/master/docs/快速开始.md)
-* [安装及配置](https://github.com/tencentyun/tcfcli/blob/master/docs/安装及配置.md)
+* [安装与配置](https://github.com/tencentyun/tcfcli/blob/master/docs/安装与配置.md)
 * [初始化示例项目](https://github.com/tencentyun/tcfcli/blob/master/docs/初始化示例项目.md)
 * [打包部署](https://github.com/tencentyun/tcfcli/blob/master/docs/打包部署.md)
 * [本地调试](https://github.com/tencentyun/tcfcli/blob/master/docs/本地调试.md)

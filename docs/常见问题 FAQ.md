@@ -1,6 +1,4 @@
-# 常见问题 FAQ
-
-## 安装问题
+## 安装相关
 
 ###  setuptools版本过旧
 
@@ -15,7 +13,7 @@
 
 解决方法： pip install -I PyYAML==x.x.x(在requirements.txt中查看具体版本)
 
-## 使用问题
+## 使用相关
 
 ### yaml 配置文件内有多个函数描述时，如何指定函数进行本地调试
 
