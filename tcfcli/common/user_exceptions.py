@@ -27,7 +27,6 @@ class NoApiDefinition(UserException):
 class InvalidTemplateException(UserException):
     pass
 
-
 class UploadToCosFailed(UserException):
     pass
 
@@ -45,6 +44,10 @@ class UserConfigException(UserException):
 
 
 class InvalidEnvParameters(UserException):
+    pass
+
+
+class InvalidOptionValue(UserException):
     pass
 
 

@@ -21,6 +21,7 @@ from tcfcli.cmds.local.cli import local
 from tcfcli.cmds.init.cli import init
 from tcfcli.cmds.validate.cli import validate
 from tcfcli.cmds.configure.cli import configure
+from tcfcli.cmds.native.cli import native
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
@@ -40,6 +41,7 @@ cli.add_command(local)
 cli.add_command(init)
 cli.add_command(configure)
 cli.add_command(validate)
+cli.add_command(native)
 
 if __name__ == "__main__":
     cli()

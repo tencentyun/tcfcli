@@ -102,20 +102,20 @@ class Resources(TypeModel):
         "TencentCloud::Serverless::Namespace": Namespace,
     }
 
-    def __init__(self, model):
-        if not isinstance(model, dict):
+    def __init__(self, config):
+        if not isinstance(config, dict):
             raise InvalidTemplateException("%s invalid" % self.__class__.__name__)
-        resource = model.get("Resources", {})
+        resource = config.get(RESOURCE, {})
         if not resource:
             raise InvalidTemplateException("Resources not found")
-        glo = model.get("Globals", {})
+        glo = config.get(GLOBAL, {})
         if not isinstance(resource, dict) or not isinstance(glo, dict):
             raise InvalidTemplateException("%s invalid" % self.__class__.__name__)
 
         super(Resources, self).__init__(resource, glo)
 
     def to_json(self):
-        return {"Resources": self._serialize()}
+        return {RESOURCE: self._serialize()}
 
 
 if __name__ == '__main__':
