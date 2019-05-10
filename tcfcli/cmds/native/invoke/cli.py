@@ -48,7 +48,7 @@ def do_invoke(template, namespace, function, event, no_event, debug_port, debug_
             event=event_data
         ) as context:
             context.invoke()
-            #os.execvpe(context.cmd, context.cmd + context.argv, context.env)
+            click.secho('finish')
     except Exception as e:
         raise e
 

@@ -1,6 +1,8 @@
 import json
 import sys
 import os
+import click
+import subprocess
 from tcfcli.libs.tcsam.tcsam import Resources
 from tcfcli.libs.tcsam import model
 from tcfcli.common.user_exceptions import InvokeContextException
@@ -73,17 +75,15 @@ class InvokeContext(object):
         pass
 
     def invoke(self):
-        print(self.cmd)
-        print(self.argv)
-        sys.stdout.flush()
-        os.execvpe(self.cmd, [self.cmd] + self.argv, self.env)
+        child = subprocess.Popen(args=[self.cmd]+self.argv, env=self.env)
+        click.secho(str([self.cmd]+self.argv))
+        child.wait()
 
     @property
     def cmd(self):
         return self.debug_context.cmd if \
             self.debug_context.cmd is not None \
             else self.runtime.cmd
-
 
     @property
     def argv(self):

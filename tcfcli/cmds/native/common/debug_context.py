@@ -24,7 +24,9 @@ class DebugContext(object):
     def argv(self):
         if self.debug_port is None:
             return []
-        argv = [self.debug_argv]
+        argv = []
+        if self.debug_argv:
+            argv.append(self.debug_argv)
         if self.runtime not in self.DEBUG_CMD.keys():
             raise InvalidOptionValue("Only [{}] support debug".format(",".join(self.DEBUG_CMD.keys())))
 
@@ -44,7 +46,6 @@ class DebugContext(object):
             "--nolazy",
             "--max-old-space-size=2547",
             "--max-semi-space-size=150",
-            "--max-executable-size=160",
             "--expose-gc",
         ]
 
