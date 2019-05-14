@@ -24,7 +24,7 @@ def invoke(template, namespace_identifier, function_identifier, event, no_event,
     \b
     Common usage:
         \b
-        $ tcf local invoke -t template.yaml
+        $ tcf native invoke -t template.yaml
     '''
     do_invoke(template, namespace_identifier, function_identifier, event, no_event, debug_port, debug_args)
 
@@ -48,7 +48,6 @@ def do_invoke(template, namespace, function, event, no_event, debug_port, debug_
             event=event_data
         ) as context:
             context.invoke()
-            click.secho('finish')
     except Exception as e:
         raise e
 

@@ -15,6 +15,10 @@ class DebugContext(object):
         self.runtime = runtime
 
     @property
+    def is_debug(self):
+        return self.debug_port is not None
+
+    @property
     def cmd(self):
         if self.debug_port is None:
             return self.DEBUG_CMD[self.runtime]
