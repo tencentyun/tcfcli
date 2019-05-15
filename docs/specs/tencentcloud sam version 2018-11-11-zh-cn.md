@@ -18,10 +18,10 @@ Serverless 应用是由事件触发运行的应用。一个典型的 serverless 
 
 腾讯云 TCSAM 用通过 [YAML](http://yaml.org/spec/1.1/) 或 [JSON](http://www.json.org/) 格式的模板文件来描述 serverless 应用。
 
-- [资源类型](#资源类型)
-- [事件源类型](#事件源类型)
-- [属性类型](#属性类型)
-- [全局部分](#全局部分)
+- [资源类型](#resource-type)
+- [事件源类型](#event-source-type)
+- [属性类型](#property-type)
+- [全局部分](#global-section)
 
 ### 示例：腾讯云 TCSAM 模板
 
@@ -44,6 +44,7 @@ Resources:
 
 腾讯云 TCSAM 中的所有属性名称都**区分大小写**。
 
+<span id = "global-section"></span>
 ### 全局部分
 
 全局部分定义了 TCSAM 模板中的全局属性，这些属性会被 `TencentCloud::Serverless::Function` 、 `TencentCloud::Serverless::Api` 资源继承。
@@ -61,7 +62,8 @@ Globals:
         DB_NAME: mydb
 ```
 
-### Resource 类型
+<span id = "resource-type"></span>
+### 资源类型
 
 - [TencentCloud::Serverless::Namespace](#tencentcloudserverlessnamespace)
   - [TencentCloud::Serverless::Function](#tencentcloudserverlessfunction)
@@ -72,7 +74,7 @@ Globals:
 
 无服务器云函数 SCF 命名空间。命名空间由一组函数组成。
 
-##### TencentCloud::Serverless::Function
+#### TencentCloud::Serverless::Function
 
 描述无服务器云函数以及触发该函数的事件源。云函数属于某个命名空间。
 
@@ -94,9 +96,9 @@ VpcConfig | [VPC配置对象](#Vpc配置对象) | 用于配置云函数访问 VP
 
 ```yaml
 
-ProjectTest: # namespace name
+ProjectTest: # 命名空间名称
   Type: 'TencentCloud::Serverless::Namespace'
-  TestFunction: # function name
+  TestFunction: # 函数名
     Type: 'TencentCloud::Serverless::Function'
     Properties:
       Handler: index.handler
@@ -134,7 +136,7 @@ MyAPI: # service name
 
 ```
 
-
+<span id = "event-source-type"></span>
 ### 事件源类型
 
 - [Timer](#timer)
@@ -221,18 +223,20 @@ apigw-trigger: # api gateway service name
 属性名称 | 类型 | 描述
 ---|:---:|---
 Name | `string` | **必填。** 消息队列名称。
-Enable | `boolean` | 表示是否启用该触发器。
+Enable | `OPEN` 或 `CLOSE` | 表示是否启用该触发器。
 
 ##### 示例：CMQ 事件源对象
 
 ```yaml
-Type: CMQ
-Properties:
-  Name: test-topic-queue
-  Enable: true
+Events:
+  Type: CMQ
+  Properties:
+    Name: test-topic-queue
+    Enable: OPEN
 ```
 
-### Property 类型
+<span id = "property-type"></span>
+### 属性类型
 
 - [事件源对象](#事件源对象)
 - [VPC 配置对象](#Vpc配置对象)
@@ -252,10 +256,11 @@ Properties | * | **必填。** 描述此事件映射属性的对象。必须符�
 ##### 示例：事件源对象
 
 ```yaml
-Type: Timer
-Properties:
-  CronExpression: '*/5 * * * *'
-  Enable: true
+Events:
+  Type: Timer
+  Properties:
+    CronExpression: '*/5 * * * *'
+    Enable: OPEN
 ```
 
 
@@ -273,8 +278,8 @@ SubnetId | `string` | **必填。** 属于 VPC 内的子网 ID。
 
 ```
 VpcConfig:
-    VpcId: 'vpc-qdqc5k2p'
-    SubnetId: 'subnet-pad6l61i'
+  VpcId: 'vpc-qdqc5k2p'
+  SubnetId: 'subnet-pad6l61i'
 ```
 
 
@@ -284,22 +289,25 @@ VpcConfig:
 
 属性名称 | 类型 | 描述
 ---|:---:|---
-变量 | `string` 到 `string` 的映射 | 定义环境变量的字符串对字符串映射，其中变量名为 key，变量值为 value。变量名限制为字母与数字组合，且第一个字符需要为字母。变量值定义为字母与数字及特殊字符 `_(){}[]$*+-\/"#',;.@!?` 的组合。
+Variables | `string` 到 `string` 的映射 | 定义环境变量的字符串对字符串映射，其中变量名为 key，变量值为 value。变量名限制为字母与数字组合，且第一个字符需要为字母。变量值定义为字母与数字及特殊字符 `_(){}[]$*+-\/"#',;.@!?` 的组合。
 
 ##### 示例：环境变量对象
 
 ```
-Environment: 
-    'MYSQL_USER': 'root',
-    'MYSQL_PASS': 'pass'
+Environment:
+  Variables:
+    MYSQL_USER: root
+    MYSQL_PASS: pass
 ```
 
 ### 数据类型
 
-- [COS 对象](#COS对象)
-- [Code URI 对象](#CodeUri)
-- [COS 通知过滤](#cos通知过滤)
+- [COS 对象](#cos-object)
+- [Code URI 对象](#codeuri-object)
+- [COS 通知过滤](#cos-filter)
 
+
+<span id = "cos-object"></span>
 #### COS对象
 
 通过指定`Bucket`、`Key` 指定对象存储位置，用于指向代码存储位置。
@@ -312,6 +320,7 @@ CodeUri:
   Key: '/code.zip'
 ```
 
+<span id = "codeuri-object"></span>
 #### CodeUri
 
 CodeUri 用来指定代码存储的位置，可以指定为本地文件系统中的文件、文件夹、zip 包或对象存储 COS 中的内容。
@@ -330,6 +339,7 @@ CodeUri: ./build
 CodeUri: /user/code/func/build.zip
 ```
 
+<span id = "cos-filter"></span>
 #### COS通知过滤
 
 用于指定对象存储通知时的过滤配置，由前缀过滤参数和后缀过滤参数组合而成。
