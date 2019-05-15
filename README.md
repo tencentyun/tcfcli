@@ -74,6 +74,19 @@ $ tcf init --runtime python2.7 --name testscf
 
 此命令会在当前目录下创建 testscf 项目目录。
 
+
+### 本地触发函数
+
+执行 `$ cd testscf` 进入项目目录。
+
+通过执行如下命令，本地模拟触发函数。
+
+```bash
+$ tcf native invoke -t template.yaml --no-event
+```
+
+注：当前仅Node.js runtime支持该能力，并且需要升级TCF CLI >= 0.2.0版本。为保证部署云端和本地运行的结果一致，建议本地安装的runtime版本和云端版本保持一致。例如，如在云端使用Node.js 6.10，则本机建议也安装Node.js 6.x版本。
+
 ### 打包项目
 
 执行 `$ cd testscf` 进入项目目录。
