@@ -22,7 +22,7 @@ tcf 通过一个函数模板配置文件，完成函数及相关周边资源的�
 
 ## 运行环境
 
-tcf 可以在 Windows、Linux、Mac 上运行。tcf 基于 Python 开发完成，因此在安装及运行前需要系统中安装有 Python 环境。更详细信息可见[安装及配置](https://github.com/tencentyun/tcfcli/blob/master/docs/安装及配置.md)。
+tcf 可以在 Windows、Linux、Mac 上运行。tcf 基于 Python 开发完成，因此在安装及运行前需要系统中安装有 Python 环境。更详细信息可见[安装及配置](https://github.com/tencentyun/tcfcli/blob/master/docs/安装与配置.md)。
 
 ## 快速入门
 
