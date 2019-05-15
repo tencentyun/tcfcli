@@ -32,7 +32,7 @@ class DebugContext(object):
         if self.debug_argv:
             argv.append(self.debug_argv)
         if self.runtime not in self.DEBUG_CMD.keys():
-            raise InvalidOptionValue("Only [{}] support debug".format(",".join(self.DEBUG_CMD.keys())))
+            raise InvalidOptionValue("Invalid runtime. [{}] support debug".format(",".join(self.DEBUG_CMD.keys())))
 
         if self.runtime == macro.RUNTIME_NODEJS_610:
             argv += self.debug_arg_node610

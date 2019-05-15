@@ -17,7 +17,7 @@ class ScfClient(object):
         self._region = uc.region
         cp = ClientProfile("TC3-HMAC-SHA256")
         self._client = scf_client.ScfClient(self._cred, self._region, cp)
-        self._client._sdkVersion = "TCFCLI_" + __version__
+        self._client._sdkVersion = "TCFCLI"
 
     def get_function(self, function_name=None):
         req = models.GetFunctionRequest()

@@ -17,7 +17,7 @@ class Runtime(object):
         self.timeout = proper.get(TIMEOUT, 3)
 
         if self.runtime not in self.RUNTIME.keys():
-            raise InvalidTemplateException("Invalid runtime.only supports [{}]".
+            raise InvalidTemplateException("Invalid runtime. supports [{}]".
                                            format(",".join(self.RUNTIME.keys())))
 
     @property
