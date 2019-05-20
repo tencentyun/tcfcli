@@ -22,7 +22,7 @@ tcf 通过一个函数模板配置文件，完成函数及相关周边资源的�
 
 ## 运行环境
 
-tcf 可以在 Windows、Linux、Mac 上运行。tcf 基于 Python 开发完成，因此在安装及运行前需要系统中安装有 Python 环境。更详细信息可见[安装及配置](https://github.com/tencentyun/tcfcli/blob/master/docs/安装及配置.md)。
+tcf 可以在 Windows、Linux、Mac 上运行。tcf 基于 Python 开发完成，因此在安装及运行前需要系统中安装有 Python 环境。更详细信息可见[安装及配置](https://github.com/tencentyun/tcfcli/blob/master/docs/安装与配置.md)。
 
 ## 快速入门
 
@@ -73,6 +73,19 @@ $ tcf init --runtime python2.7 --name testscf
 ```
 
 此命令会在当前目录下创建 testscf 项目目录。
+
+
+### 本地触发函数
+
+执行 `$ cd testscf` 进入项目目录。
+
+通过执行如下命令，本地模拟触发函数。
+
+```bash
+$ tcf native invoke -t template.yaml --no-event
+```
+
+注：当前仅Node.js runtime支持该能力，并且需要升级TCF CLI >= 0.2.0版本。为保证部署云端和本地运行的结果一致，建议本地安装的runtime版本和云端版本保持一致。例如，如在云端使用Node.js 6.10，则本机建议也安装Node.js 6.x版本。
 
 ### 打包项目
 
