@@ -37,7 +37,7 @@ TCF 通过 `native invoke` 子命令完成本地触发运行。TCF 命令行工�
 
 在通过 `tcf init` 初始化得到的示例项目中，均带有已准备好的代码文件及模板配置文件。以该示例项目为例，假定在环境为 Node.js 8.9下，/Users/xxx/code/scf 目录中创建了一个 hello_world 项目。
 
-我们通过命令管道传递 cos post 文件的模拟事件，触发函数运行。函数代码内容仅为打印 event 并返回 "hello world"。函数代码 /Users/xxx/code/scf/testproject/hello_world/main.py 示例如下：
+我们通过命令管道传递 cos post 文件的模拟事件，触发函数运行。函数代码内容仅为打印 event 并返回 "hello world"。函数代码 /Users/xxx/code/scf/testproject/hello_world/main.js 示例如下：
 ```
 
 'use strict';
