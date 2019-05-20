@@ -35,6 +35,9 @@ tcf 可以在 Windows、Linux、Mac 上运行。tcf 基于 Python 开发完成�
 
 * Python 2.7+ 或 Python 3.6+
 * pip
+* git
+* 对应的开发语言（如Node.js 8.9等）
+
 
 #### 通过 pip 安装 tcf
 
@@ -66,10 +69,10 @@ $ tcf configure set --region ap-guangzhou --appid 1253970223 --secret-id AKIxxxx
 
 选择进入到合适的代码目录，例如 `cd ~`。
 
-通过执行如下命令，创建运行环境为 Python 2.7，名称为 testscf 的项目。
+通过执行如下命令，创建运行环境为 Node.js 8.9，名称为 testscf 的项目。
 
 ```bash
-$ tcf init --runtime python2.7 --name testscf
+$ tcf init --runtime nodejs8.9 --name testscf
 ```
 
 此命令会在当前目录下创建 testscf 项目目录。
@@ -85,7 +88,7 @@ $ tcf init --runtime python2.7 --name testscf
 $ tcf native invoke -t template.yaml --no-event
 ```
 
-注：当前仅Node.js runtime支持该能力，并且需要升级TCF CLI >= 0.2.0版本。为保证部署云端和本地运行的结果一致，建议本地安装的runtime版本和云端版本保持一致。例如，如在云端使用Node.js 6.10，则本机建议也安装Node.js 6.x版本。
+注：当前仅Node.js runtime支持该能力，并且需要升级TCF CLI >= 0.2.0版本。为保证部署云端和本地运行的结果一致，建议本地安装的runtime版本和云端版本保持一致。例如，如在云端使用Node.js 8.9，则本机建议也安装Node.js 8.x版本。
 
 ### 打包项目
 
