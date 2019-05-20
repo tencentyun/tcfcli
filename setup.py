@@ -33,7 +33,7 @@ setup(
     version=read_version(),
     packages=find_packages(),
     description='This is a local tools for SCF.',
-    long_description=open('README.md').read(),
+    long_description=io.open('README.md', encoding='utf-8').read(),
     author='Tencent Cloud',
     url='https://github.com/tencentyun/tcfcli.git',
     maintainer_email="qcloud_middleware@qq.com",
