@@ -202,7 +202,7 @@ Properties:
 ---|:---:|---
 StageName | `string` | 发布阶段的名称，API网关用作调用统一资源标识符（URI）中的第一个路径段。可选值为：test、prepub、release。默认如果为新 API 服务时为 release，已有 API 服务时为 test。
 HttpMethod | `string`  | HTTP 请求方法，可选值为：ANY、GET、POST、PUT、DELETE、HEAD。默认值为 ANY。
-
+IntegratedResponse | `boolean`  | 是否启用集成响应。默认值为 False。
 
 ##### 示例：API 事件源对象
 
@@ -212,6 +212,7 @@ apigw-trigger: # api gateway service name
     Properties:
         StageName: release
         HttpMethod: ANY
+        IntegratedResponse: True
 ```
 
 #### CMQ
