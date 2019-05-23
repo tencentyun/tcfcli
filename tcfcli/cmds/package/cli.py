@@ -5,7 +5,7 @@ import uuid
 from zipfile import ZipFile, ZIP_DEFLATED
 from io import BytesIO
 from tcfcli.libs.utils.yaml_parser import yaml_dump
-from tcfcli.libs.function.context import Context
+from tcfcli.common.template import Template
 from tcfcli.libs.utils.cos_client import CosClient
 from tcfcli.common.user_exceptions import TemplateNotFoundException, \
     InvalidTemplateException, ContextException
@@ -38,7 +38,7 @@ class Package(object):
         self.cos_bucket = cos_bucket
         self.output_template_file = output_template_file
         self.check_params()
-        self.resource = Resources(Context.get_template_data(self.template_file))
+        self.resource = Resources(Template.get_template_data(self.template_file))
 
     def do_package(self):
         for ns_name, ns in vars(self.resource).items():

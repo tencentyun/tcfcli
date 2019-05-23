@@ -2,6 +2,7 @@ import click
 import base64
 import os
 import json
+import io
 from tcfcli.libs.utils import py_version
 from chevron import renderer
 
@@ -52,7 +53,7 @@ class GenerateEventAction(click.MultiCommand):
         filename = self.srv_info[action]["filename"] + ".js"
         path = os.path.join(pwd, "events", self.service, filename)
 
-        with open(path) as f:
+        with io.open(path, encoding="utf-8") as f:
             data = f.read().strip()
 
         data = renderer.render(data, params)

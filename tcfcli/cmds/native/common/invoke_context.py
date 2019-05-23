@@ -11,19 +11,23 @@ from tcfcli.common.user_exceptions import InvalidOptionValue
 from tcfcli.cmds.native.common.runtime import Runtime
 from tcfcli.cmds.native.common.debug_context import DebugContext
 from tcfcli.common.template import Template
-
+from tcfcli.common.macro import MacroRuntime
+from tcfcli.common.file_util import FileUtil
 
 class InvokeContext(object):
 
     BOOTSTRAP_SUFFIX = {
-        "nodejs6.10": "bootstrap.js",
-        "nodejs8.9": "bootstrap.js"
+        MacroRuntime.node610: "bootstrap.js",
+        MacroRuntime.node89: "bootstrap.js",
+        MacroRuntime.python27: "bootstrap.py",
+        MacroRuntime.python36: "bootstrap.py",
     }
 
     def __init__(self,
                  template_file,
                  function=None,
                  namespace=None,
+                 env_file=None,
                  debug_port=None,
                  debug_args="",
                  event="{}"):
@@ -36,6 +40,7 @@ class InvokeContext(object):
         self._debug_argv = debug_args
         self._runtime = None
         self._debug_context = None
+        self._env_file = env_file
 
     def _get_namespace(self, resource):
         ns = None
@@ -127,6 +132,7 @@ class InvokeContext(object):
         for k, v in os.environ.items():
             env[k] = v
 
+        env.update(FileUtil.load_json_from_file(self._env_file))
         return env
 
     def get_handler(self):

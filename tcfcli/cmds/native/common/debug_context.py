@@ -1,12 +1,14 @@
 from tcfcli.common.user_exceptions import InvalidOptionValue
-from tcfcli.common import macro
+from tcfcli.common.macro import MacroRuntime
 
 
 class DebugContext(object):
 
     DEBUG_CMD = {
-        macro.RUNTIME_NODEJS_610: macro.CMD_NODE,
-        macro.RUNTIME_NODEJS_89: macro.CMD_NODE
+        MacroRuntime.node610: MacroRuntime.cmd_node610,
+        MacroRuntime.node89: MacroRuntime.cmd_node89,
+        MacroRuntime.python27: MacroRuntime.cmd_python27,
+        MacroRuntime.python36: MacroRuntime.cmd_python36
     }
 
     def __init__(self, port, argv, runtime):
@@ -34,10 +36,14 @@ class DebugContext(object):
         if self.runtime not in self.DEBUG_CMD.keys():
             raise InvalidOptionValue("Invalid runtime. [{}] support debug".format(",".join(self.DEBUG_CMD.keys())))
 
-        if self.runtime == macro.RUNTIME_NODEJS_610:
+        if self.runtime == MacroRuntime.node610:
             argv += self.debug_arg_node610
-        elif self.runtime == macro.RUNTIME_NODEJS_89:
+        elif self.runtime == MacroRuntime.node89:
             argv += self.debug_arg_node89
+        elif self.runtime == MacroRuntime.python36:
+            argv += self.debug_arg_python36
+        elif self.runtime == MacroRuntime.python27:
+            argv += self.debug_arg_python27
         else:
             pass
         return argv
@@ -61,4 +67,28 @@ class DebugContext(object):
             "--expose-gc",
             "--max-semi-space-size=150",
             "--max-old-space-size=2707",
+        ]
+    
+    @property
+    def debug_arg_python36(self):
+        return [
+            "-m",
+            "ptvsd",
+            "--host",
+            "0.0.0.0",
+            "--port",
+            str(self.debug_port),
+            "--wait"
+        ]
+    
+    @property
+    def debug_arg_python27(self):
+        return [
+            "-m",
+            "ptvsd",
+            "--host",
+            "0.0.0.0",
+            "--port",
+            str(self.debug_port),
+            "--wait"
         ]

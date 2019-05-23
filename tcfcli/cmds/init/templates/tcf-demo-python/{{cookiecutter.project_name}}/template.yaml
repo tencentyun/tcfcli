@@ -1,0 +1,48 @@
+Resources:
+  default:
+    Type: TencentCloud::Serverless::Namespace
+    hello_world:
+      Type: TencentCloud::Serverless::Function
+      Properties:
+        CodeUri: ./hello_world
+        Description: This is a template function
+        Environment:
+          Variables:
+            ENV_FIRST: env1
+            ENV_SECOND: env2
+        Handler: index.main_handler
+        MemorySize: 128
+        {%- if cookiecutter.runtime == 'python2.7' %}
+        Runtime: Python2.7
+        {%- elif cookiecutter.runtime == 'python3.6' %}
+        Runtime: Python3.6
+        {%- else %}
+        Runtime: Python3.6
+        {%- endif %}
+        Timeout: 3
+        #Events:
+        #    timer:
+        #        Type: Timer
+        #        Properties:
+        #            CronExpression: '*/5 * * * *'
+        #            Enable: OPEN
+        #    cli-12345678.cos.ap-beijing.myqcloud.com: # full bucket name
+        #        Type: COS
+        #        Properties:
+        #            Filter:
+        #                Prefix: filterdir/
+        #                Suffix: .jpg
+        #            Events: cos:ObjectCreated:*
+        #            Enable: OPEN
+        #    topic:            # topic name
+        #        Type: CMQ
+        #        Properties:
+        #    hello_world_apigw:  # ${FunctionName} + '_apigw'
+        #        Type: APIGW
+        #        Properties:
+        #            StageName: release
+        #            HttpMethod: ANY
+
+Globals:
+  Function:
+    Timeout: 10

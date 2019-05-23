@@ -51,13 +51,15 @@ class InvalidOptionValue(UserException):
     pass
 
 
-class InvalidResourceException(Exception):
+class InvalidResourceException(UserException):
     pass
 
 
-class InvalidEventException(Exception):
+class InvalidEventException(UserException):
     pass
 
+class InvalidEnvVarsException(UserException):
+    pass
 
 class InvalidDocumentException(Exception):
     def __init__(self, causes):
