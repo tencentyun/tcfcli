@@ -16,7 +16,7 @@ STD_IN = '-'
               envvar="TCF_TEMPLATE_FILE", show_default=True)
 @click.option('--debug-port', '-d', help='The port exposed for debugging.', default=None)
 @click.option('--debug-args', help='Additional args to be passed the debugger.', default="")
-@click.argument('namespace_identifier', required=False, default='default')
+@click.argument('namespace_identifier', required=False)
 @click.argument('function_identifier', required=False)
 def invoke(template, namespace_identifier, function_identifier, env_vars, event, no_event, debug_port, debug_args):
     '''
