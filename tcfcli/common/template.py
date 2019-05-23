@@ -1,4 +1,5 @@
 import os
+import io
 import yaml
 from tcfcli.common.user_exceptions import ContextException
 from tcfcli.libs.utils.yaml_parser import yaml_parse
@@ -11,7 +12,7 @@ class Template(object):
         if not os.path.exists(template_file):
             return {}
 
-        with open(template_file, 'r') as f:
+        with io.open(template_file, mode='r', encoding='utf-8') as f:
             try:
                 return yaml_parse(f.read())
             except (ValueError, yaml.YAMLError) as ex:

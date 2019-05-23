@@ -1,4 +1,5 @@
 recursive-include tcfcli/cmds/local/generate_event/events *.js
 recursive-include tcfcli/cmds/native/common  *
+recursive-include tcfcli/cmds/init/templates  *
 include requirements.txt
 include README.md

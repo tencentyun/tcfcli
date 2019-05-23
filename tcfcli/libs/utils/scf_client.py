@@ -44,6 +44,8 @@ class ScfClient(object):
         req.MemorySize = getattr(func, "MemorySize", None)
         req.Timeout = getattr(func, "Timeout", None)
         req.Runtime = getattr(func, "Runtime", None)
+        if req.Runtime:
+            req.Runtime = req.Runtime[0].upper() + req.Runtime[1:].lower()
         req.Environment = self._model_envs(getattr(func, "Environment", None))
         req.VpcConfig = self._model_vpc(getattr(func, "VpcConfig", None))
         resp = self._client.UpdateFunctionConfiguration(req)
@@ -58,6 +60,8 @@ class ScfClient(object):
         req.MemorySize = getattr(func, "MemorySize", None)
         req.Timeout = getattr(func, "Timeout", None)
         req.Runtime = getattr(func,"Runtime", None)
+        if req.Runtime:
+            req.Runtime = req.Runtime[0].upper() + req.Runtime[1:].lower()
         req.Environment = self._model_envs(getattr(func, "Environment", None))
         req.VpcConfig = self._model_vpc(getattr(func, "VpcConfig", None))
         req.Code = self._model_code(getattr(func, "LocalZipFile", None),

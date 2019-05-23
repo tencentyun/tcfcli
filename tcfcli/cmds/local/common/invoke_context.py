@@ -3,7 +3,7 @@ import sys
 import docker
 import os
 
-from tcfcli.libs.function.context import Context as FuncContext
+from tcfcli.common.template import Template
 from tcfcli.libs.function.fam_function_provider import ScfFunctionProvider
 from tcfcli.libs.tcsam.tcsam import Resources
 from tcfcli.libs.tcsam import model
@@ -47,9 +47,15 @@ class InvokeContext(object):
         self._debug_context = None
 
     def __enter__(self):
-        template_dict = Resources(FuncContext().get_template_data(self._template_file)).to_json()
+        template_dict = Resources(Template.get_template_data(self._template_file)).to_json()
         resource = template_dict.get(model.RESOURCE, {})
-        ns = resource.get(self.namespace, {})
+        ns = None
+        if self.namespace is not None:
+            ns = resource.get(self.namespace, {})
+        else:
+            nss = list(resource.keys())
+            if len(nss) == 1:
+                ns = resource.get(nss[0], None)
         if not ns:
             raise InvokeContextException("You must provide a namespace identifier,default is 'default'")
         if model.TYPE in ns:

@@ -11,7 +11,7 @@ STD_IN = '-'
 @click.option('--event', '-e', type=click.Path(), default=STD_IN)
 @click.option('--no-event', is_flag=True, default=False)
 @invoke_common_options
-@click.argument('namespace_identifier', required=False, default='default')
+@click.argument('namespace_identifier', required=False)
 @click.argument('function_identifier', required=False)
 def invoke(template, namespace_identifier, function_identifier, event, no_event, env_vars, debug_port, debug_args, debugger_path,
            docker_volume_basedir, docker_network, log_file, skip_pull_image, region):

@@ -1,11 +1,13 @@
 from tcfcli.libs.tcsam.model import *
 from tcfcli.common.user_exceptions import InvalidTemplateException
-
+from tcfcli.common.macro import MacroRuntime
 
 class Runtime(object):
     RUNTIME = {
-        'nodejs6.10': "node",
-        'nodejs8.9': "node"
+        MacroRuntime.node610: MacroRuntime.cmd_node610,
+        MacroRuntime.node89: MacroRuntime.cmd_node89,
+        MacroRuntime.python36: MacroRuntime.cmd_python36,
+        MacroRuntime.python27: MacroRuntime.cmd_python27,
     }
 
     def __init__(self, proper):

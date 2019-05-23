@@ -11,13 +11,14 @@ STD_IN = '-'
 @click.command(name='invoke')
 @click.option('--event', '-e', type=click.Path(), default=STD_IN)
 @click.option('--no-event', is_flag=True, default=False)
+@click.option('--env-vars', '-n', help='JSON file contains function environment variables.', type=click.Path(exists=True))
 @click.option('--template', '-t', default=DEF_TMP_FILENAME, type=click.Path(exists=True),
               envvar="TCF_TEMPLATE_FILE", show_default=True)
 @click.option('--debug-port', '-d', help='The port exposed for debugging.', default=None)
 @click.option('--debug-args', help='Additional args to be passed the debugger.', default="")
-@click.argument('namespace_identifier', required=False, default='default')
+@click.argument('namespace_identifier', required=False)
 @click.argument('function_identifier', required=False)
-def invoke(template, namespace_identifier, function_identifier, event, no_event, debug_port, debug_args):
+def invoke(template, namespace_identifier, function_identifier, env_vars, event, no_event, debug_port, debug_args):
     '''
     \b
     Execute your scf in a environment natively
@@ -26,10 +27,10 @@ def invoke(template, namespace_identifier, function_identifier, event, no_event,
         \b
         $ tcf native invoke -t template.yaml
     '''
-    do_invoke(template, namespace_identifier, function_identifier, event, no_event, debug_port, debug_args)
+    do_invoke(template, namespace_identifier, function_identifier, env_vars, event, no_event, debug_port, debug_args)
 
 
-def do_invoke(template, namespace, function, event, no_event, debug_port, debug_args):
+def do_invoke(template, namespace, function, env_vars, event, no_event, debug_port, debug_args):
 
     if no_event:
         event_data = "{}"
@@ -37,12 +38,12 @@ def do_invoke(template, namespace, function, event, no_event, debug_port, debug_
         click.secho('Enter a event:', color="green")
         with click.open_file(event, 'r') as f:
             event_data = f.read()
-
     try:
         with InvokeContext(
             template_file=template,
             namespace=namespace,
             function=function,
+            env_file=env_vars,
             debug_port=debug_port,
             debug_args=debug_args,
             event=event_data

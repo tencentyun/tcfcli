@@ -1,6 +1,18 @@
-RUNTIME_NODEJS_610 = "nodejs6.10"
-RUNTIME_NODEJS_89 = "nodejs8.9"
 
+class MacroRuntime(object):
 
+    # nodejs 6.10
+    node610 = "nodejs6.10"
+    cmd_node610 = "node"
 
-CMD_NODE = "node"
+    # nodejs 8.9
+    node89 = "nodejs8.9"
+    cmd_node89 = "node"
+
+    # python3.6
+    python36 = "python3.6"
+    cmd_python36 = "python"
+
+    # python2.7
+    python27 = "python2.7"
+    cmd_python27 = "python"

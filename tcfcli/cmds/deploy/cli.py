@@ -1,6 +1,6 @@
 import click
 import sys
-from tcfcli.libs.function.context import Context
+from tcfcli.common.template import Template
 from tcfcli.common.user_exceptions import TemplateNotFoundException, InvalidTemplateException
 from tcfcli.libs.utils.scf_client import ScfClient
 from tcfcli.libs.tcsam.tcsam import Resources
@@ -22,7 +22,7 @@ class Deploy(object):
     def __init__(self, template_file, forced=False):
         self.template_file = template_file
         self.check_params()
-        self.resource = Resources(Context.get_template_data(self.template_file))
+        self.resource = Resources(Template.get_template_data(self.template_file))
         self.forced = forced
 
     def do_deploy(self):
