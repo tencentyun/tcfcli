@@ -2,14 +2,14 @@
 #chardet>=3.0.4
 docker>=3.3.0
 click==6.7
-Flask==1.0.*
+Flask>=1.0.0,<2.0.0
 cos-python-sdk-v5>=1.5.8
 #dicttoxml>=1.7.4
-#PyYAML>=3.12
+PyYAML>=3.12
 #urllib3>=1.23
-cookiecutter==1.6.*
+cookiecutter>=1.6.0, <1.7.0
 tencentcloud-sdk-python>=3.0.30
 pathlib2>=2.3.2
-chevron>=0.12.*
-ptvsd==4.2.*
+chevron>=0.12.0, <0.13.0
+ptvsd>=4.2.0, <4.3.0
 
