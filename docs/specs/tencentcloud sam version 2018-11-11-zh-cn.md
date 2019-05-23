@@ -33,7 +33,7 @@ Resources:
       Type: 'TencentCloud::Serverless::Function'
       Properties:
         Handler: index.handler
-        Runtime: python2.7
+        Runtime: Python2.7
         CodeUri: './' 
       Events:
         crontrigger: # trigger name
@@ -54,7 +54,7 @@ Resources:
 ```yaml
 Globals:
   Function:
-    Runtime: python2.7
+    Runtime: Python2.7
     Timeout: 30
     Handler: index.handler
     Environment:
@@ -83,7 +83,7 @@ Globals:
 属性名称 | 类型 | 描述
 ---|:---:|---
 Handler | `string` | **必填。** 云函数的入口执行方法。
-Runtime | `string` | **必填。** 云函数的运行时环境。可选值为：python2.7、python3.6、nodejs6.10、nodejs8.9、php5、php7、golang1、java8。
+Runtime | `string` | **必填。** 云函数的运行时环境。可选值为：Python2.7、Python3.6、Nodejs6.10、Nodejs8.9、Php5、Php7、Golang1、Java8。
 CodeUri | `string` | **必填。** 代码位置。支持本地文件、本地目录、本地 zip 文件、对象存储 COS bucket 及 object 等形式，更多信息参考[Codeuri](#CodeUri)。
 Description | `string` | 云函数的描述。
 MemorySize | `integer` | 函数执行时分配的内存大小，单位是 MB，默认为 128（MB），按 128 递增。
@@ -102,7 +102,7 @@ ProjectTest: # 命名空间名称
     Type: 'TencentCloud::Serverless::Function'
     Properties:
       Handler: index.handler
-      Runtime: python2.7
+      Runtime: Python2.7
       CodeUri: './'
       Description: Cron function
       Timeout: 10
