@@ -110,32 +110,6 @@ ProjectTest: # 命名空间名称
       
 ```
 
-#### TencentCloud::Serverless::Api
-
-描述可通过 HTTP 方法调用云函数的腾讯云 API 网关的服务、API和方法的集合。
-
-##### 属性
-
-属性名称 | 类型 | 描述
----|:---:|---
-StageName | `string` | 发布阶段的名称，API网关用作调用统一资源标识符（URI）中的第一个路径段。可选值为：test、prepub、release。默认如果为新 API 服务时为 release，已有 API 服务时为 test。
-HttpMethod | `string` | HTTP 请求方法，可选值为：ANY、GET、POST、PUT、DELETE、HEAD。默认值为 ANY。
-ApiPath | `string` | HTTP 请求路径，需要以 '/' 开头。默认为 "/" + FunctionName。
-ResponseIntegration| `boolean` | 设置是否启用 API 网关的集成响应能力。默认为 true。
-
-
-##### 示例：TencentCloud::Serverless::Api
-
-```yaml
-MyAPI: # service name
-  Type: 'TencentCloud::Serverless::Api'
-  Properties:
-    Path: '/testapi'
-    StageName: test
-    HttpMethod: ANY
-
-```
-
 <span id = "event-source-type"></span>
 ### 事件源类型
 
