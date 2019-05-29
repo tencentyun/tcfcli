@@ -33,7 +33,7 @@ Resources:
       Type: 'TencentCloud::Serverless::Function'
       Properties:
         Handler: index.handler
-        Runtime: python2.7
+        Runtime: Python2.7
         CodeUri: './' 
       Events:
         crontrigger: # trigger name
@@ -54,7 +54,7 @@ Resources:
 ```yaml
 Globals:
   Function:
-    Runtime: python2.7
+    Runtime: Python2.7
     Timeout: 30
     Handler: index.handler
     Environment:
@@ -83,7 +83,7 @@ Globals:
 属性名称 | 类型 | 描述
 ---|:---:|---
 Handler | `string` | **必填。** 云函数的入口执行方法。
-Runtime | `string` | **必填。** 云函数的运行时环境。可选值为：python2.7、python3.6、nodejs6.10、nodejs8.9、php5、php7、golang1、java8。
+Runtime | `string` | **必填。** 云函数的运行时环境。可选值为：Python2.7、Python3.6、Nodejs6.10、Nodejs8.9、Php5、Php7、Golang1、Java8。
 CodeUri | `string` | **必填。** 代码位置。支持本地文件、本地目录、本地 zip 文件、对象存储 COS bucket 及 object 等形式，更多信息参考[Codeuri](#CodeUri)。
 Description | `string` | 云函数的描述。
 MemorySize | `integer` | 函数执行时分配的内存大小，单位是 MB，默认为 128（MB），按 128 递增。
@@ -102,38 +102,12 @@ ProjectTest: # 命名空间名称
     Type: 'TencentCloud::Serverless::Function'
     Properties:
       Handler: index.handler
-      Runtime: python2.7
+      Runtime: Python2.7
       CodeUri: './'
       Description: Cron function
       Timeout: 10
       MemorySize: 512
       
-```
-
-#### TencentCloud::Serverless::Api
-
-描述可通过 HTTP 方法调用云函数的腾讯云 API 网关的服务、API和方法的集合。
-
-##### 属性
-
-属性名称 | 类型 | 描述
----|:---:|---
-StageName | `string` | 发布阶段的名称，API网关用作调用统一资源标识符（URI）中的第一个路径段。可选值为：test、prepub、release。默认如果为新 API 服务时为 release，已有 API 服务时为 test。
-HttpMethod | `string` | HTTP 请求方法，可选值为：ANY、GET、POST、PUT、DELETE、HEAD。默认值为 ANY。
-ApiPath | `string` | HTTP 请求路径，需要以 '/' 开头。默认为 "/" + FunctionName。
-ResponseIntegration| `boolean` | 设置是否启用 API 网关的集成响应能力。默认为 true。
-
-
-##### 示例：TencentCloud::Serverless::Api
-
-```yaml
-MyAPI: # service name
-  Type: 'TencentCloud::Serverless::Api'
-  Properties:
-    Path: '/testapi'
-    StageName: test
-    HttpMethod: ANY
-
 ```
 
 <span id = "event-source-type"></span>
@@ -202,7 +176,7 @@ Properties:
 ---|:---:|---
 StageName | `string` | 发布阶段的名称，API网关用作调用统一资源标识符（URI）中的第一个路径段。可选值为：test、prepub、release。默认如果为新 API 服务时为 release，已有 API 服务时为 test。
 HttpMethod | `string`  | HTTP 请求方法，可选值为：ANY、GET、POST、PUT、DELETE、HEAD。默认值为 ANY。
-
+IntegratedResponse | `boolean`  | 是否启用集成响应。默认值为 False。
 
 ##### 示例：API 事件源对象
 
@@ -212,6 +186,7 @@ apigw-trigger: # api gateway service name
     Properties:
         StageName: release
         HttpMethod: ANY
+        IntegratedResponse: True
 ```
 
 #### CMQ
