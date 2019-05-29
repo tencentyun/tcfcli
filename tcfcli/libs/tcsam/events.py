@@ -59,6 +59,11 @@ class APIGW(ProperModel):
             MUST: False,
             TYPE: mstr,
             VALUE: ["ANY", "GET", "POST", "PUT", "DELETE", "HEAD"]
+        },
+        "IntegratedResponse": {
+            MUST: False,
+            TYPE: mbool,
+            VALUE: None
         }
     }
 
@@ -66,12 +71,15 @@ class APIGW(ProperModel):
         super(APIGW, self).__init__(model)
 
     def trigger_desc(self):
+        ir_flag = getattr(self, "IntegratedResponse", False)
+        isIntegratedResponse = "TRUE" if ir_flag else "FALSE"
         ret = {
             "api": {
                 "authRequired": "FALSE",
                 "requestConfig": {
                     "method": getattr(self, "HttpMethod", None)
-                }
+                },
+                "isIntegratedResponse": isIntegratedResponse
             },
             "service": {
                 "serviceName": "SCF_API_SERVICE"
