@@ -18,7 +18,7 @@ class ScfClient(object):
         self._cred = credential.Credential(secretId=uc.secret_id, secretKey=uc.secret_key)
         self._region = uc.region
         hp = HttpProfile(reqTimeout=ScfClient.CLOUD_API_REQ_TIMEOUT)
-        cp = ClientProfile("TC3-HMAC-SHA256", ScfClient)
+        cp = ClientProfile("TC3-HMAC-SHA256", hp)
         self._client = scf_client.ScfClient(self._cred, self._region, cp)
         self._client._sdkVersion = "TCFCLI"
 

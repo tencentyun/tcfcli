@@ -4,7 +4,7 @@ import sys
 import json
 import time
 import uuid
-import psutil
+import pstool
 
 tcf_stdout = sys.stdout
 tcf_stderr = sys.stderr
@@ -81,9 +81,7 @@ def report_done(msg, err_type=0):
 
     duration = int((time.time() - _GLOBAL_START_TIME) * 1000)
     billed_duration = min(100 * int((duration / 100) + 1), _GLOBAL_TIMEOUT * 1000)
-    pid = os.getpid()
-    py = psutil.Process(pid)
-    max_mem = py.memory_info()[0]/(2**20)  # memory use in MB
+    max_mem = pstool.get_peak_memory()  # memory use in MB
     tcf_print(
         "REPORT RequestId: %s Duration: %s ms Billed Duration: %s ms Memory Size: %s MB Max Memory Used: %s MB" % (
             _GLOBAL_REQUEST_ID, duration, billed_duration, _GLOBAL_MEM_SIZE, max_mem
