@@ -11,7 +11,17 @@ SIZE_T = ctypes.c_size_t
 
 class PROCESS_MEMORY_COUNTERS_EX(ctypes.Structure):
     _fields_ = [
+        ('cb', wintypes.DWORD),
+        ('PageFaultCount', wintypes.DWORD),
         ('PeakWorkingSetSize', SIZE_T),
+        ('WorkingSetSize', SIZE_T),
+        ('QuotaPeakPagedPoolUsage', SIZE_T),
+        ('QuotaPagedPoolUsage', SIZE_T),
+        ('QuotaPeakNonPagedPoolUsage', SIZE_T),
+        ('QuotaNonPagedPoolUsage', SIZE_T),
+        ('PagefileUsage', SIZE_T),
+        ('PeakPagefileUsage', SIZE_T),
+        ('PrivateUsage', SIZE_T),
     ]
 
 GetProcessMemoryInfo = ctypes.windll.psapi.GetProcessMemoryInfo
@@ -36,4 +46,4 @@ def win_peak_memory(process=None):
     if not ret:
         return 0
     info = dict((name, getattr(counters, name)) for name, _ in counters._fields_)
-    return info["PeakWorkingSetSize"] / (2**20)
+    return int(info["PeakWorkingSetSize"] / (2**20))
