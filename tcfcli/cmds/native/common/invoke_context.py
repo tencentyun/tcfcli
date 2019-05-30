@@ -94,6 +94,7 @@ class InvokeContext(object):
             child = subprocess.Popen(args=[self.cmd]+self.argv, env=self.env)
         except OSError:
             click.secho("Execution failed,confirm whether the program({}) is installed".format(self._runtime.cmd))
+            return
         timer = threading.Timer(self._runtime.timeout, timeout_handle, [child])
         if not self._debug_context.is_debug:
             timer.start()

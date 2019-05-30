@@ -1,4 +1,4 @@
-#certifi>=2018.4.16
+certifi>=2018.4.16
 #chardet>=3.0.4
 docker>=3.3.0
 click==6.7
