@@ -182,7 +182,7 @@ IntegratedResponse | `boolean`  | 是否启用集成响应。默认值为 False�
 
 ```yaml
 apigw-trigger: # api gateway service name
-    Type: API # trigger type
+    Type: APIGW # trigger type
     Properties:
         StageName: release
         HttpMethod: ANY
