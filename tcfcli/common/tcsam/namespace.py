@@ -9,5 +9,8 @@ ns_schema = {
             "const": "TencentCloud::Serverless::Namespace"
         }
     },
-    "additionalProperties": { "type": func_schema}
+    "additionalProperties": {
+        "type": "object",
+        "oneOf": [func_schema]
+    }
 }

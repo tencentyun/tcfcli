@@ -3,5 +3,11 @@ res_schema = {
     "$schema": "http://json-schema.org/draft-07/schema/resource#",
     "$id": "tcsam.resource",
     "type": "object",
-    "additionalProperties": ns_schema
+    "properties": {
+        #"oneOf": [ns_schema]
+    },
+    "additionalProperties": {
+        "type": "object",
+        "oneOf": [ns_schema]
+    }
 }

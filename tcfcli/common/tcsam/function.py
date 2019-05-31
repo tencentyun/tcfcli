@@ -5,7 +5,7 @@ from .event import cos_schema
 from .tcsam_macro import TcSamMacro as macro
 
 func_schema = {
-    "$schema": "http://json-schema.org/draft-07/schema/resource/ns/func#",
+    "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "tcsam.resource.ns.func", 
     "type": "object",
     "properties": {
@@ -13,7 +13,6 @@ func_schema = {
         macro.Properties: {
             "type": "object",
             "properties": {
-                '''
                 macro.CodeUri: {"type": "string"},
                 macro.Desc: {"type": "string"},
                 macro.Envi: {
@@ -38,10 +37,13 @@ func_schema = {
                 macro.Timeout: {"type": "integer", "exclusiveMinimum": 0},
                 macro.Events: {
                     "type": "object",
-                    "properties": {},
-                    "additionalProperties": { "type": [apigw_schema, cos_schema, timer_schema, cmq_schema]}
+                    "properties":{},
+                    "additionalProperties": {
+                        "type": "object",
+                        "oneOf": [apigw_schema, cos_schema, timer_schema, cmq_schema]
+                    }
+
                 }, 
-                '''
             },
             "additionalProperties": False
         }

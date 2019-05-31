@@ -1,6 +1,6 @@
 from .tcsam_macro import TcSamMacro as macro
 apigw_schema = {
-    "$schema": "http://json-schema.org/draft-07/schema/resource/ns/func/event/apigw#",
+    "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "tcsam.ns.func.event.apigw",
     "type": "object",
     "properties": {
@@ -30,7 +30,7 @@ apigw_schema = {
 
 
 timer_schema = {
-    "$schema": "http://json-schema.org/draft-07/schema/resource/ns/func/event/timer#",
+    "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "tcsam.ns.func.event.timer",
     "type": "object",
     "properties": {
@@ -53,7 +53,7 @@ timer_schema = {
 
 
 cmq_schema = {
-    "$schema": "http://json-schema.org/draft-07/schema/resource/ns/func/event/cmq#",
+    "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "tcsam.ns.func.event.cmq",
     "type": "object",
     "properties": {
@@ -70,7 +70,7 @@ cmq_schema = {
 
 
 cos_schema = {
-    "$schema": "http://json-schema.org/draft-07/schema/resource/ns/func/event/cos#",
+    "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "tcsam.ns.func.event.cos",
     "type": "object",
     "properties": {

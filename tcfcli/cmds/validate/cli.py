@@ -9,5 +9,7 @@ def validate(template_file):
     '''
     validate a scf template.
     '''
-    tcsam.tcsam_validate(Context.get_template_data(template_file))
+    ret = tcsam.tcsam_validate(Context.get_template_data(template_file))
+    if ret:
+        click.secho("Invalid:{}".format(ret), fg="red")
     # resource = Resources(Context.get_template_data(template_file))
