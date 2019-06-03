@@ -9,7 +9,8 @@ from tcfcli.common.template import Template
 from tcfcli.libs.utils.cos_client import CosClient
 from tcfcli.common.user_exceptions import TemplateNotFoundException, \
     InvalidTemplateException, ContextException
-from tcfcli.libs.tcsam.tcsam import Resources
+from tcfcli.common.tcsam.tcsam_macro import TcSamMacro as tsmacro
+from tcfcli.common import tcsam
 
 _DEFAULT_OUT_TEMPLATE_FILE = "deploy.yaml"
 _CURRENT_DIR = '.'
@@ -38,28 +39,35 @@ class Package(object):
         self.cos_bucket = cos_bucket
         self.output_template_file = output_template_file
         self.check_params()
-        self.resource = Resources(Template.get_template_data(self.template_file))
+
+        # self.resource = Resources(Template.get_template_data(self.template_file))
+        template_data = tcsam.tcsam_validate(Template.get_template_data(self.template_file))
+        self.resource = template_data.get(tsmacro.Resources, {})
 
     def do_package(self):
-        for ns_name, ns in vars(self.resource).items():
-            for func_name, func in vars(ns).items():
-                code_url = self._do_package_core(getattr(func, "CodeUri", ""))
+        for ns in  self.resource:
+            for func in  self.resource[ns]:
+                if func == tsmacro.Type:
+                    continue
+                code_url = self._do_package_core(
+                    self.resource[ns][func][tsmacro.Properties].get(tsmacro.CodeUri, "")
+                )
                 if "cos_bucket_name" in code_url:
-                    setattr(func, "CosBucketName", code_url["cos_bucket_name"])
-                    setattr(func, "CosObjectName", code_url["CosObjectName"])
+                    self.resource[ns][func][tsmacro.Properties]["CosBucketName"] = code_url["cos_bucket_name"]
+                    self.resource[ns][func][tsmacro.Properties]["CosObjectName"] = code_url["CosObjectName"]
                     click.secho("Upload function zip file '{}' to COS bucket '{}' success".
                                 format(os.path.basename(code_url["cos_object_name"]),
                                        code_url["cos_bucket_name"]), fg="green")
                 elif "zip_file" in code_url:
-                    setattr(func, "LocalZipFile", code_url["zip_file"])
+                    self.resource[ns][func][tsmacro.Properties]["LocalZipFile"] = code_url["zip_file"]
 
-        yaml_dump(self.resource.to_json(), self.output_template_file)
+        yaml_dump({tsmacro.Resources: self.resource}, self.output_template_file)
         click.secho("Generate deploy file '{}' success".format(self.output_template_file), fg="green")
 
     def check_params(self):
         if not self.template_file:
             click.secho("FAM Template Not Found", fg="red")
-            raise TemplateNotFoundException("Missing option --template-file".format(self.template_file))
+            raise TemplateNotFoundException("Missing option --template-file")
 
     def _do_package_core(self, func_path):
         zipfile, zip_file_name = self._zip_func(func_path)
@@ -98,20 +106,3 @@ class Package(object):
         # click.secho("Compress function '{}' to zipfile '{}' success".format(func_config.name, zip_file_name))
 
         return buff, zip_file_name
-
-    def _get_code_abs_path(self, code_uri):
-
-        if not self._cwd or self._cwd == _CURRENT_DIR:
-            self._cwd = os.getcwd()
-
-        self._cwd = os.path.abspath(self._cwd)
-
-        code_path = code_uri
-        if not os.path.isabs(code_uri):
-            code_path = os.path.normpath(os.path.join(self._cwd, code_path))
-
-        return code_path
-
-    def _get_cwd(self):
-        cwd = os.path.dirname(os.path.abspath(self._template_path))
-        return cwd

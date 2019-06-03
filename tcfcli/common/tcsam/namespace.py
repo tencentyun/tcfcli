@@ -9,6 +9,7 @@ ns_schema = {
             "const": "TencentCloud::Serverless::Namespace"
         }
     },
+    "required": [macro.Type],
     "additionalProperties": {
         "type": "object",
         "oneOf": [func_schema]

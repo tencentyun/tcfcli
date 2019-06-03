@@ -7,6 +7,8 @@ from tencentcloud.common.profile.http_profile import HttpProfile
 from tencentcloud.common.exception.tencent_cloud_sdk_exception import TencentCloudSDKException
 from tencentcloud.scf.v20180416 import scf_client, models
 from tcfcli.common.user_config import UserConfig
+from tcfcli.common.tcsam.tcsam_macro import TcSamMacro as tsmacro
+from tcfcli.common.tcsam.tcsam_macro import TriggerMacro as trmacro
 import base64
 
 
@@ -32,10 +34,11 @@ class ScfClient(object):
         req = models.UpdateFunctionCodeRequest()
         req.Namespace = func_ns
         req.FunctionName = func_name
-        req.Handler = getattr(func, "Handler", None)
-        req.ZipFile = self._model_zip_file(getattr(func, "LocalZipFile", None))
-        req.CosBucketName = getattr(func, "CosBucketName", None)
-        req.CosObjectName = getattr(func, "CosObjectName", None)
+        proper = func.get(tsmacro.Properties, {})
+        req.Handler = proper.get(tsmacro.Handler)
+        req.ZipFile = self._model_zip_file(proper.get(tsmacro.LocalZipFile))
+        req.CosBucketName = proper.get(tsmacro.CosBucketName)
+        req.CosObjectName = proper.get(tsmacro.CosObjectName)
         resp = self._client.UpdateFunctionCode(req)
         return resp.to_json_string()
 
@@ -43,14 +46,12 @@ class ScfClient(object):
         req = models.UpdateFunctionConfigurationRequest()
         req.Namespace = func_ns
         req.FunctionName = func_name
-        req.Description = getattr(func, "Description", None)
-        req.MemorySize = getattr(func, "MemorySize", None)
-        req.Timeout = getattr(func, "Timeout", None)
-        # req.Runtime = getattr(func, "Runtime", None)
-        # if req.Runtime:
-        #    req.Runtime = req.Runtime[0].upper() + req.Runtime[1:].lower()
-        req.Environment = self._model_envs(getattr(func, "Environment", None))
-        req.VpcConfig = self._model_vpc(getattr(func, "VpcConfig", None))
+        proper = func.get(tsmacro.Properties, {})
+        req.Description = proper.get(tsmacro.Desc)
+        req.MemorySize = proper.get(tsmacro.MemSize)
+        req.Timeout = proper.get(tsmacro.Timeout)
+        req.Environment = self._model_envs(proper.get(tsmacro.Envi))
+        req.VpcConfig = self._model_vpc(proper.get(tsmacro.VpcConfig))
         resp = self._client.UpdateFunctionConfiguration(req)
         return resp.to_json_string()
 
@@ -58,18 +59,19 @@ class ScfClient(object):
         req = models.CreateFunctionRequest()
         req.Namespace =  func_ns
         req.FunctionName = func_name
-        req.Handler = getattr(func, "Handler", None)
-        req.Description = getattr(func, "Description", None)
-        req.MemorySize = getattr(func, "MemorySize", None)
-        req.Timeout = getattr(func, "Timeout", None)
-        req.Runtime = getattr(func,"Runtime", None)
+        proper = func.get(tsmacro.Properties, {})
+        req.Handler = proper.get(tsmacro.Handler)
+        req.Description = proper.get(tsmacro.Desc)
+        req.MemorySize = proper.get(tsmacro.MemSize)
+        req.Timeout = proper.get(tsmacro.Timeout)
+        req.Runtime = proper.get(tsmacro.Runtime)
         if req.Runtime:
             req.Runtime = req.Runtime[0].upper() + req.Runtime[1:].lower()
-        req.Environment = self._model_envs(getattr(func, "Environment", None))
-        req.VpcConfig = self._model_vpc(getattr(func, "VpcConfig", None))
-        req.Code = self._model_code(getattr(func, "LocalZipFile", None),
-                                    getattr(func, "CosBucketName", None),
-                                    getattr(func, "CosObjectName", None))
+        req.Environment = self._model_envs(proper.get(tsmacro.Envi))
+        req.VpcConfig = self._model_vpc(proper.get(tsmacro.VpcConfig))
+        req.Code = self._model_code(proper.get(tsmacro.LocalZipFile),
+                                    proper.get(tsmacro.CosBucketName),
+                                    proper.get(tsmacro.CosObjectName))
         resp = self._client.CreateFunction(req)
         return resp.to_json_string()
 
@@ -95,14 +97,52 @@ class ScfClient(object):
         req.Namespace = func_ns
         req.FunctionName = func_name
         req.TriggerName = name
-        req.Type = trigger.__class__.__name__.lower()
-        trigger_desc = trigger.trigger_desc()
-        if isinstance(trigger_desc, dict):
-            trigger_desc = json.dumps(trigger_desc, separators=(',', ':'))
-        req.TriggerDesc = trigger_desc
-        req.Enable = getattr(trigger, "Enable", "OPEN")
+        req.Type = trigger.get(tsmacro.Type)
+        proper = trigger.get(tsmacro.Properties)
+        if req.Type == tsmacro.TrCOS and trmacro.Bucket in proper:
+            req.TriggerName = proper[trmacro.Bucket]
+        self._fill_trigger_req_desc(req, req.Type, proper, name)
+        enable = proper.get(trmacro.Enable)
+        if isinstance(enable, bool):
+            enable = ["CLOSE", "OPEN"][int(enable)]
+        req.Enable = enable
         resp = self._client.CreateTrigger(req)
         click.secho(resp.to_json_string())
+    
+    @staticmethod
+    def _fill_trigger_req_desc(req, t, proper, name):
+        if t == tsmacro.TrTimer:
+            desc = proper.get(trmacro.CronExp)
+        elif t == tsmacro.TrApiGw:
+            ir_flag = proper.get(trmacro.IntegratedResp, False)
+            isIntegratedResponse = "TRUE" if ir_flag else "FALSE"
+            desc = {
+                "api": {
+                    "authRequired": "FALSE",
+                    "requestConfig": {
+                        "method": proper.get(trmacro.HttpMethod, None)
+                    },
+                    "isIntegratedResponse": isIntegratedResponse
+                },
+                "service": {
+                    "serviceName": "SCF_API_SERVICE"
+                },
+                "release": {
+                    "environmentName": proper.get(trmacro.StageName, None)
+                }
+            }
+            desc = json.dumps(desc, separators=(',', ':'))
+        elif t == tsmacro.TrCMQ:
+            desc = proper.get(trmacro.Name, name)
+        
+        elif t == tsmacro.TrCOS:
+            desc = {"event": proper.get(tsmacro.Events), "filter": proper.get(trmacro.Filter)}
+            desc = json.dumps(desc, separators=(',', ':'))
+        else:
+            raise Exception("Invalid trigger type:{}".format(str(t)))
+        req.TriggerDesc = desc
+
+
 
     def deploy_trigger(self, trigger, name, func_name, func_ns):
         try:

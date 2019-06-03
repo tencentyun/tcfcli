@@ -24,6 +24,7 @@ func_schema = {
                             "additionalProperties": { "type": "string" }
                         }
                     },
+                    "required": [macro.Vari],
                     "additionalProperties": False
                 },
                 macro.Handler: {"type": "string"},
@@ -44,9 +45,19 @@ func_schema = {
                     }
 
                 }, 
+                macro.VpcConfig: {
+                    "type": "object",
+                    "properties":{
+                        macro.VpcId: {"type": "string"},
+                        macro.SubnetId: {"type": "string"}
+                    },
+                    "additionalProperties": False                  
+                }
             },
+            "required": [macro.Handler, macro.Runtime, macro.CodeUri],
             "additionalProperties": False
         }
     },
+    "required": [macro.Type, macro.Properties],
     "additionalProperties": False
 }

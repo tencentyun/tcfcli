@@ -20,23 +20,28 @@ Resources:
         Runtime: Python3.6
         {%- endif %}
         Timeout: 3
+        #VpcConfig:
+        #    VpcId: 'vpc-qdqc5k2p'
+        #    SubnetId: 'subnet-pad6l61i'
         #Events:
         #    timer:
         #        Type: Timer
         #        Properties:
         #            CronExpression: '*/5 * * * *'
-        #            Enable: OPEN
+        #            Enable: True
         #    cli-12345678.cos.ap-beijing.myqcloud.com: # full bucket name
         #        Type: COS
         #        Properties:
+        #            Bucket: cli-12345678.cos.ap-beijing.myqcloud.com
         #            Filter:
         #                Prefix: filterdir/
         #                Suffix: .jpg
         #            Events: cos:ObjectCreated:*
-        #            Enable: OPEN
+        #            Enable: True
         #    topic:            # topic name
         #        Type: CMQ
         #        Properties:
+        #            Name: qname
         #    hello_world_apigw:  # ${FunctionName} + '_apigw'
         #        Type: APIGW
         #        Properties:

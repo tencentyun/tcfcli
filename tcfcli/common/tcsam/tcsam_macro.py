@@ -13,3 +13,33 @@ class TcSamMacro(object):
     Events = "Events"
     Globals = "Globals"
     Function = "Function"
+    VpcConfig = "VpcConfig"
+    VpcId = "VpcId"
+    SubnetId = "SubnetId"
+    LocalZipFile = "LocalZipFile"
+    CosBucketName = "CosBucketName"
+    CosObjectName = "CosObjectName"
+
+
+
+
+    TrApiGw = "APIGW"
+    TrCMQ = "CMQ"
+    TrCOS = "COS"
+    TrTimer = "Timer"
+
+
+
+
+class TriggerMacro(object):
+    CronExp = "CronExpression"
+    HttpMethod = "HttpMethod"
+    IntegratedResp = "IntegratedResponse"
+    StageName = "StageName"
+    Filter = "Filter"
+    Prefix = "Prefix"
+    Suffix = "Suffix"
+    Enable = "Enable"
+    Name = "Name"
+    Bucket = "Bucket"
+

@@ -1,22 +1,23 @@
 from .tcsam_macro import TcSamMacro as macro
+from .tcsam_macro import TriggerMacro as trmacro
 apigw_schema = {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "tcsam.ns.func.event.apigw",
     "type": "object",
     "properties": {
-        macro.Type: {"const": "APIGW"},
+        macro.Type: {"const": macro.TrApiGw},
         macro.Properties: {
             "type": "object",
             "properties": {
-                "StageName": {
+                trmacro.StageName: {
                     "type": "string",
                     "enum": ["test", "prepub", "release"]
                 },
-                "HttpMethod": {
+                trmacro.HttpMethod: {
                     "type": "string",
                     "enum": ["ANY", "GET", "POST", "PUT", "DELETE", "HEAD"]
                 },
-                "IntegratedResponse": {
+                trmacro.IntegratedResp: {
                     "type": "boolean",
                 }
             },
@@ -34,12 +35,12 @@ timer_schema = {
     "$id": "tcsam.ns.func.event.timer",
     "type": "object",
     "properties": {
-        macro.Type: {"const": "Timer"},
+        macro.Type: {"const": macro.TrTimer},
         macro.Properties: {
             "type": "object",
             "properties": {
-                "CronExpression": {"type": "string"},
-                "Enable": {
+                trmacro.CronExp: {"type": "string"},
+                trmacro.Enable: {
                     "enum": ["OPEN", "CLOSE", True, False]
                 }   
             },
@@ -57,10 +58,12 @@ cmq_schema = {
     "$id": "tcsam.ns.func.event.cmq",
     "type": "object",
     "properties": {
-        macro.Type: {"const": "CMQ"},
+        macro.Type: {"const": macro.TrCMQ},
         macro.Properties: {
             "type": "object",
-            "properties": {},
+            "properties": {
+                "Name": {"type": "string"}
+            },
             "additionalProperties": False
         }
     },
@@ -74,20 +77,20 @@ cos_schema = {
     "$id": "tcsam.ns.func.event.cos",
     "type": "object",
     "properties": {
-        macro.Type: {"const": "COS"},
+        macro.Type: {"const": macro.TrCOS},
         macro.Properties: {
             "type": "object",
             "properties": {
-                "Filter": {
+                trmacro.Filter: {
                     "type": "object",
                     "properties": {
-                        "Prefix": {"type": "string"},
-                        "Suffix": {"type": "string"}
+                        trmacro.Prefix: {"type": "string"},
+                        trmacro.Suffix: {"type": "string"}
                     }
                 },
                 "Bucket": {"type": "string"},
-                "Events": {"type": "string"},
-                "Enable": {
+                macro.Events: {"type": "string"},
+                trmacro.Enable: {
                     "enum": ["OPEN", "CLOSE", True, False]
                 }
             },
