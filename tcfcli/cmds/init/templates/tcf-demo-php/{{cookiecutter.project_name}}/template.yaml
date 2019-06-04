@@ -29,10 +29,10 @@ Resources:
         #        Properties:
         #            CronExpression: '*/5 * * * *'
         #            Enable: True
-        #    cli-12345678.cos.ap-beijing.myqcloud.com: # full bucket name
+        #    cli-appid.cos.ap-beijing.myqcloud.com: # full bucket name
         #        Type: COS
         #        Properties:
-        #            Bucket: cli-12345678.cos.ap-beijing.myqcloud.com
+        #            Bucket: cli-appid.cos.ap-beijing.myqcloud.com
         #            Filter:
         #                Prefix: filterdir/
         #                Suffix: .jpg
