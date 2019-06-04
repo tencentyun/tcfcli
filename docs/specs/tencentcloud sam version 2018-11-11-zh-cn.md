@@ -231,6 +231,7 @@ Events:
   Type: ckafka
   Properties:
     Name: ckafka-2o10hua5
+    Topic: test
     MaxMsgNum: 999
     Offset: latest
     Enable: true
