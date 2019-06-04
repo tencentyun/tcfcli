@@ -16,10 +16,10 @@ func_schema = {
                 macro.CodeUri: {"type": "string"},
                 macro.Desc: {"type": "string"},
                 macro.Envi: {
-                    "type": ["object", "null"],
+                    "type": "object",
                     "properties": {
                         macro.Vari: {
-                            "type": ["object", "null"],
+                            "type": "object",
                             "properties": {},
                             "additionalProperties": { "type": "string" }
                         }

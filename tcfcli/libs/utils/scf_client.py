@@ -161,8 +161,6 @@ class ScfClient(object):
 
     @staticmethod
     def _model_envs(environment):
-        if environment is None:
-            return None
         envs_array = []
         vari = environment.get(tsmacro.Vari, {})
         for k in vari:

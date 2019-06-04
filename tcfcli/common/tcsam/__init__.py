@@ -11,5 +11,5 @@ def tcsam_validate(tcsam_data):
         TcSamutil.merge_globals(tcsam_data)
         validate(instance=tcsam_data, schema=ts_schema)
     except ValidationError as err:
-        raise TcSamException(str(err).split("\n")[0])
+        raise TcSamException("Validator the template file failed, {0}\n{1}".format(err.message, err.absolute_path))
     return tcsam_data
