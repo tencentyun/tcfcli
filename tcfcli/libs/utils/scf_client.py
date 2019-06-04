@@ -160,10 +160,10 @@ class ScfClient(object):
         if environment is None:
             return None
         envs_array = []
-        for k, v in vars(environment).items():
+        for k in environment[tsmacro.Vari]:
             var = models.Variable()
             var.Key = k
-            var.Value = v
+            var.Value = environment[tsmacro.Vari][k]
             envs_array.append(var)
         envi = models.Environment()
         envi.Variables = envs_array

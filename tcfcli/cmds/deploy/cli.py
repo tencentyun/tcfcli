@@ -33,6 +33,8 @@ class Deploy(object):
                 continue
             click.secho("deploy {ns} begin".format(ns=ns))
             for func in self.resources[ns]:
+                if func == tsmacro.Type:
+                    continue
                 self._do_deploy_core(self.resources[ns][func], func, ns, self.forced)
             click.secho("deploy {ns} end".format(ns=ns))
 
@@ -58,7 +60,8 @@ class Deploy(object):
         self._do_deploy_trigger(func, func_name, func_ns)
 
     def _do_deploy_trigger(self, func, func_name, func_ns):
-        events = func.get(tsmacro.Events, {})
+        proper = func.get(tsmacro.Properties, {})
+        events = proper.get(tsmacro.Events, {})
 
         for trigger in events:
             err = ScfClient().deploy_trigger(events[trigger], trigger, func_name, func_ns)

@@ -52,7 +52,8 @@ func_schema = {
                         macro.SubnetId: {"type": "string"}
                     },
                     "additionalProperties": False                  
-                }
+                },
+                macro.LocalZipFile: {"type": "string"}
             },
             "required": [macro.Handler, macro.Runtime, macro.CodeUri],
             "additionalProperties": False
