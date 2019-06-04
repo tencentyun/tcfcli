@@ -5,11 +5,11 @@ import os
 
 from tcfcli.common.template import Template
 from tcfcli.libs.function.fam_function_provider import ScfFunctionProvider
-from tcfcli.libs.tcsam.tcsam import Resources
-from tcfcli.libs.tcsam import model
 from tcfcli.common.user_exceptions import InvokeContextException
 from tcfcli.cmds.local.libs.local.local_runtime_manager import LocalRuntimeManager
 from tcfcli.cmds.local.libs.local.debug_context import DebugContext
+from tcfcli.common import tcsam
+from tcfcli.common.tcsam.tcsam_macro import TcSamMacro as tsmacro
 
 
 class InvokeContext(object):
@@ -47,8 +47,8 @@ class InvokeContext(object):
         self._debug_context = None
 
     def __enter__(self):
-        template_dict = Resources(Template.get_template_data(self._template_file)).to_json()
-        resource = template_dict.get(model.RESOURCE, {})
+        template_dict = tcsam.tcsam_validate(Template.get_template_data(self._template_file))
+        resource = template_dict.get(tsmacro.Resources, {})
         ns = None
         if self.namespace is not None:
             ns = resource.get(self.namespace, {})
@@ -58,9 +58,11 @@ class InvokeContext(object):
                 ns = resource.get(nss[0], None)
         if not ns:
             raise InvokeContextException("You must provide a namespace identifier,default is 'default'")
-        if model.TYPE in ns:
-            del ns[model.TYPE]
-        self._template_dict = {model.RESOURCE: ns}
+        try:
+            del ns[tsmacro.Type]
+        except Exception:
+            pass
+        self._template_dict = {tsmacro.Resources: ns}
         self._function_provider = ScfFunctionProvider(template_dict=self._template_dict)
         self._env_vars = self._get_env_vars(self._env_vars_file)
         self._log_file_fp = self._get_log_file(self._log_file)

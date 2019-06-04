@@ -20,7 +20,12 @@ def get(**kwargs):
     attrs = uc.get_attrs(kwargs)
     msg = "{} config:\n".format(UserConfig.API)
     for attr in sorted(attrs):
-         msg += "{} = {}\n".format(attr, attrs[attr])
+        attr_value = attrs[attr]
+        if attr == "secret-id":
+            attr_value = "*"*32 + attr_value[32:]
+        elif attr == "secret-key":
+            attr_value = "*"*28 + attr_value[28:]
+        msg += "{} = {}\n".format(attr, attr_value)
     click.secho(msg.strip())
 
 

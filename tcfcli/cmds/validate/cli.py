@@ -1,7 +1,6 @@
 import click
-from tcfcli.libs.tcsam.tcsam import Resources
-from tcfcli.libs.function.context import Context
-
+from tcfcli.common import tcsam
+from tcfcli.common.template import Template
 
 @click.command(name="validate")
 @click.option('--template-file', '-t', type=click.Path(exists=True), help="TCF template file for deploy")
@@ -9,4 +8,4 @@ def validate(template_file):
     '''
     validate a scf template.
     '''
-    resource = Resources(Context.get_template_data(template_file))
+    tcsam.tcsam_validate(Template.get_template_data(template_file))

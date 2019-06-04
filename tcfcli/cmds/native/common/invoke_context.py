@@ -4,8 +4,8 @@ import os
 import click
 import subprocess
 import threading
-from tcfcli.libs.tcsam.tcsam import Resources
-from tcfcli.libs.tcsam import model
+from tcfcli.common import tcsam
+from tcfcli.common.tcsam.tcsam_macro import TcSamMacro as tsmacro
 from tcfcli.common.user_exceptions import InvokeContextException
 from tcfcli.common.user_exceptions import InvalidOptionValue
 from tcfcli.cmds.native.common.runtime import Runtime
@@ -54,7 +54,7 @@ class InvokeContext(object):
         if not ns:
             raise InvokeContextException("You must provide a valid namespace")
 
-        del ns[model.TYPE]
+        del ns[tsmacro.Type]
         return ns
 
     def _get_function(self, namespace):
@@ -69,14 +69,15 @@ class InvokeContext(object):
         if not fun:
             raise InvokeContextException("You must provide a valid function")
 
-        del fun[model.TYPE]
+        del fun[tsmacro.Type]
         return fun
 
     def __enter__(self):
-        template_dict = Resources(Template.get_template_data(self._template_file)).to_json()
-        resource = template_dict.get(model.RESOURCE, {})
+        template_dict = tcsam.tcsam_validate(Template.get_template_data(self._template_file))
+
+        resource = template_dict.get(tsmacro.Resources, {})
         func = self._get_function(self._get_namespace(resource))
-        self._runtime = Runtime(func[model.PROPERTY])
+        self._runtime = Runtime(func.get(tsmacro.Properties, {}))
         self._debug_context = DebugContext(self._debug_port, self._debug_argv, self._runtime.runtime)
         return self
 

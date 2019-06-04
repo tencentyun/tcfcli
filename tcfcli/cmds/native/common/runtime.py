@@ -1,4 +1,4 @@
-from tcfcli.libs.tcsam.model import *
+from tcfcli.common.tcsam.tcsam_macro import TcSamMacro as tsmacro
 from tcfcli.common.user_exceptions import InvalidTemplateException
 from tcfcli.common.macro import MacroRuntime
 
@@ -11,12 +11,12 @@ class Runtime(object):
     }
 
     def __init__(self, proper):
-        self.codeuri = proper.get(CODE_URI)
-        self.env = proper.get(ENVIRONMENT, {VARIABLE: {}}).get(VARIABLE, {})
-        self.handler = proper.get(HANDLER, "")
-        self.mem_size = proper.get(MEMORY_SIZE, 128)
-        self.runtime = proper.get(RUNTIME, "").lower()
-        self.timeout = proper.get(TIMEOUT, 3)
+        self.codeuri = proper.get(tsmacro.CodeUri)
+        self.env = proper.get(tsmacro.Envi,  {tsmacro.Vari: {}}).get(tsmacro.Vari, {})
+        self.handler = proper.get(tsmacro.Handler)
+        self.mem_size = proper.get(tsmacro.MemSize)
+        self.runtime = proper.get(tsmacro.Runtime, "").lower()
+        self.timeout = proper.get(tsmacro.Timeout, 3)
 
         if self.runtime not in self.RUNTIME.keys():
             raise InvalidTemplateException("Invalid runtime. supports [{}]".
