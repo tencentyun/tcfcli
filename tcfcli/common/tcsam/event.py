@@ -56,7 +56,7 @@ timer_schema = {
 cmq_schema = {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "tcsam.ns.func.event.cmq",
-    "type": "object",
+    "type": ["object", "null"],
     "properties": {
         macro.Type: {"const": macro.TrCMQ},
         macro.Properties: {

@@ -97,11 +97,14 @@ class ScfClient(object):
         req.Namespace = func_ns
         req.FunctionName = func_name
         req.TriggerName = name
-        req.Type = trigger.get(tsmacro.Type)
+        trigger_type = trigger.get(tsmacro.Type, "")
+        req.Type = trigger_type.lower()
         proper = trigger.get(tsmacro.Properties)
-        if req.Type == tsmacro.TrCOS and trmacro.Bucket in proper:
+        if trigger_type == tsmacro.TrCOS and trmacro.Bucket in proper:
             req.TriggerName = proper[trmacro.Bucket]
-        self._fill_trigger_req_desc(req, req.Type, proper, name)
+        if trigger_type == tsmacro.TrCMQ and trmacro.Name in proper:
+            req.TriggerName = proper[trmacro.Name]
+        self._fill_trigger_req_desc(req, trigger_type, proper)
         enable = proper.get(trmacro.Enable)
         if isinstance(enable, bool):
             enable = ["CLOSE", "OPEN"][int(enable)]
@@ -110,7 +113,7 @@ class ScfClient(object):
         click.secho(resp.to_json_string())
     
     @staticmethod
-    def _fill_trigger_req_desc(req, t, proper, name):
+    def _fill_trigger_req_desc(req, t, proper):
         if t == tsmacro.TrTimer:
             desc = proper.get(trmacro.CronExp)
         elif t == tsmacro.TrApiGw:
@@ -133,7 +136,8 @@ class ScfClient(object):
             }
             desc = json.dumps(desc, separators=(',', ':'))
         elif t == tsmacro.TrCMQ:
-            desc = proper.get(trmacro.Name, name)
+            #desc = proper.get(trmacro.Name, name)
+            desc = None
         
         elif t == tsmacro.TrCOS:
             desc = {"event": proper.get(tsmacro.Events), "filter": proper.get(trmacro.Filter)}
