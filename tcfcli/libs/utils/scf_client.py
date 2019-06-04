@@ -50,7 +50,7 @@ class ScfClient(object):
         req.Description = proper.get(tsmacro.Desc)
         req.MemorySize = proper.get(tsmacro.MemSize)
         req.Timeout = proper.get(tsmacro.Timeout)
-        req.Environment = self._model_envs(proper.get(tsmacro.Envi))
+        req.Environment = self._model_envs(proper.get(tsmacro.Envi, {}))
         req.VpcConfig = self._model_vpc(proper.get(tsmacro.VpcConfig))
         resp = self._client.UpdateFunctionConfiguration(req)
         return resp.to_json_string()
@@ -67,7 +67,7 @@ class ScfClient(object):
         req.Runtime = proper.get(tsmacro.Runtime)
         if req.Runtime:
             req.Runtime = req.Runtime[0].upper() + req.Runtime[1:].lower()
-        req.Environment = self._model_envs(proper.get(tsmacro.Envi))
+        req.Environment = self._model_envs(proper.get(tsmacro.Envi, {}))
         req.VpcConfig = self._model_vpc(proper.get(tsmacro.VpcConfig))
         req.Code = self._model_code(proper.get(tsmacro.LocalZipFile),
                                     proper.get(tsmacro.CosBucketName),
@@ -99,7 +99,7 @@ class ScfClient(object):
         req.TriggerName = name
         trigger_type = trigger.get(tsmacro.Type, "")
         req.Type = trigger_type.lower()
-        proper = trigger.get(tsmacro.Properties)
+        proper = trigger.get(tsmacro.Properties, {})
         if trigger_type == tsmacro.TrCOS and trmacro.Bucket in proper:
             req.TriggerName = proper[trmacro.Bucket]
         if trigger_type == tsmacro.TrCMQ and trmacro.Name in proper:
@@ -164,10 +164,11 @@ class ScfClient(object):
         if environment is None:
             return None
         envs_array = []
-        for k in environment[tsmacro.Vari]:
+        vari = environment.get(tsmacro.Vari, {})
+        for k in vari:
             var = models.Variable()
             var.Key = k
-            var.Value = environment[tsmacro.Vari][k]
+            var.Value = vari[k]
             envs_array.append(var)
         envi = models.Environment()
         envi.Variables = envs_array
