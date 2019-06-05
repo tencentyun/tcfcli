@@ -224,11 +224,11 @@ MaxMsgNum | `integer` | **必填。** 最大批量消息数，范围1-1000。
 Offset | `string` | 起始offset位置，默认为latest。
 Enable | `boolean` | 是否启用触发器。
 
-##### 示例：CMQ 事件源对象
+##### 示例：CKafka 事件源对象
 
 ```yaml
 Events:
-  Type: ckafka
+  Type: Ckafka
   Properties:
     Name: ckafka-2o10hua5
     Topic: test
@@ -262,7 +262,7 @@ Events:
   Type: Timer
   Properties:
     CronExpression: '*/5 * * * *'
-    Enable: OPEN
+    Enable: true
 ```
 
 
