@@ -115,8 +115,9 @@ ProjectTest: # 命名空间名称
 
 - [Timer](#timer)
 - [COS](#cos)
-- [Api](#api)
+- [API](#api)
 - [CMQ](#cmq)
+- [CKafka](#ckafka)
 
 #### Timer
 
@@ -176,17 +177,17 @@ Properties:
 ---|:---:|---
 StageName | `string` | 发布阶段的名称，API网关用作调用统一资源标识符（URI）中的第一个路径段。可选值为：test、prepub、release。默认如果为新 API 服务时为 release，已有 API 服务时为 test。
 HttpMethod | `string`  | HTTP 请求方法，可选值为：ANY、GET、POST、PUT、DELETE、HEAD。默认值为 ANY。
-IntegratedResponse | `boolean`  | 是否启用集成响应。默认值为 False。
+IntegratedResponse | `boolean`  | 是否启用集成响应。默认值为 false。
 
 ##### 示例：API 事件源对象
 
 ```yaml
 apigw-trigger: # api gateway service name
-    Type: API # trigger type
+    Type: APIGW # trigger type
     Properties:
         StageName: release
         HttpMethod: ANY
-        IntegratedResponse: True
+        IntegratedResponse: true
 ```
 
 #### CMQ
@@ -198,7 +199,7 @@ apigw-trigger: # api gateway service name
 属性名称 | 类型 | 描述
 ---|:---:|---
 Name | `string` | **必填。** 消息队列名称。
-Enable | `OPEN` 或 `CLOSE` | 表示是否启用该触发器。
+Enable | `boolean` | 是否启用触发器。
 
 ##### 示例：CMQ 事件源对象
 
@@ -207,7 +208,33 @@ Events:
   Type: CMQ
   Properties:
     Name: test-topic-queue
-    Enable: OPEN
+    Enable: true
+```
+#### CKafka
+
+描述类型为 [CKafka 触发器](https://cloud.tencent.com/document/product/583/17530) 的对象。
+
+##### 属性
+
+属性名称 | 类型 | 描述
+---|:---:|---
+Name | `string` | **必填。** 消息队列CKafka名称。
+Topic | `string` | **必填。** 消息队列CKafka主题Topic名称。
+MaxMsgNum | `integer` | **必填。** 最大批量消息数，范围1-1000。
+Offset | `string` | 起始offset位置，默认为latest。
+Enable | `boolean` | 是否启用触发器。
+
+##### 示例：CMQ 事件源对象
+
+```yaml
+Events:
+  Type: ckafka
+  Properties:
+    Name: ckafka-2o10hua5
+    Topic: test
+    MaxMsgNum: 999
+    Offset: latest
+    Enable: true
 ```
 
 <span id = "property-type"></span>
