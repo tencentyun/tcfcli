@@ -98,7 +98,7 @@ def main():
 
 def init_handler(file, func):
     try:
-        func_handler = get_func_handler(file.rsplit(".", 1)[0], func)
+        func_handler = get_func_handler(file, func)
     except Exception as ex:
         runtime.log('get user function[%s:%s] failed' % (file, func))
         runtime.log(str(ex))
