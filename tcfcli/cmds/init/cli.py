@@ -24,7 +24,7 @@ class Init(object):
         return os.path.join(pwd, Init.TEMPLATES_DIR, runtime_pro)
 
     @staticmethod
-    def do_cli(location, runtime, output_dir, name, no_input):
+    def do_cli(location, runtime, output_dir, name, namespace, no_input):
 
         click.secho("[+] Initializing project...", fg="green")
         params = {
@@ -36,7 +36,7 @@ class Init(object):
         click.secho("Output-Dir: %s" % params["output_dir"])
         if not location and name is not None:
             params["no_input"] = True
-            params['extra_context'] = {'project_name': name, 'runtime': runtime}
+            params['extra_context'] = {'project_name': name, 'runtime': runtime, 'namespace': namespace}
             click.secho("Project-Name: %s" % params['extra_context']["project_name"])
             click.secho("Runtime: %s" % params['extra_context']["runtime"])
 
@@ -53,9 +53,10 @@ class Init(object):
 @click.option('-r', '--runtime', type=click.Choice(Init.RUNTIMES.keys()), default="python3.6",
               help="Scf Runtime of your app")
 @click.option('-o', '--output-dir', default='.', type=click.Path(), help="Where to output the initialized app into")
-@click.option('-n', '--name',  default="demo", help="Name of your project to be generated as a folder")
+@click.option('-n', '--name',  default="hello_world", help="Function name")
+@click.option('-ns', '--namespace',  default="default", help="Namespace name")
 @click.option('-N', '--no-input', is_flag=True, help="Disable prompting and accept default values defined template config")
-def init(location, runtime, output_dir, name, no_input):
+def init(location, runtime, output_dir, name, namespace, no_input):
     """
     \b
     Initialize a Serverless Cloud Function with a scf template
@@ -71,4 +72,4 @@ def init(location, runtime, output_dir, name, no_input):
         \b
         $ tcf init --location gh:pass/demo-python
     """
-    Init.do_cli(location, runtime, output_dir, name, no_input)
+    Init.do_cli(location, runtime, output_dir, name, namespace, no_input)

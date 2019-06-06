@@ -1,4 +1,5 @@
 {
     "project_name": "demo-nodejs8.9",
-    "runtime": "nodejs8.9"
+    "runtime": "nodejs8.9",
+    "namespace": "default"
 }

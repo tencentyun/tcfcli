@@ -1,10 +1,10 @@
 Resources:
-  default:
+  {{cookiecutter.namespace}}:
     Type: TencentCloud::Serverless::Namespace
-    hello_world:
+    {{cookiecutter.project_name}}:
       Type: TencentCloud::Serverless::Function
       Properties:
-        CodeUri: ./hello_world
+        CodeUri: ./
         Description: This is a template function
         Environment:
           Variables:

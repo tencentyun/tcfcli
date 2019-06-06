@@ -14,6 +14,7 @@ from tcfcli.common import tcsam
 
 _DEFAULT_OUT_TEMPLATE_FILE = "deploy.yaml"
 _CURRENT_DIR = '.'
+_BUILD_DIR = './.tcf_build'
 
 
 @click.command()
@@ -92,6 +93,8 @@ class Package(object):
         os.chdir(func_path)
         with ZipFile(buff, mode='w', compression=ZIP_DEFLATED) as zip_object:
             for current_path, sub_folders, files_name in os.walk(_CURRENT_DIR):
+                if current_path == _BUILD_DIR:
+                    continue
                 for file in files_name:
                     zip_object.write(os.path.join(current_path, file))
 
@@ -99,6 +102,10 @@ class Package(object):
         buff.seek(0)
         buff.name = zip_file_name
 
+        
+        if not os.path.exists(_BUILD_DIR):
+            os.mkdir(_BUILD_DIR)
+        zip_file_name = os.path.join(_BUILD_DIR, zip_file_name)
         # a temporary support for upload func from local zipfile
         with open(zip_file_name, 'wb') as f:
             f.write(buff.read())

@@ -4,7 +4,7 @@ deps:
 	go get github.com/tencentyun/scf-go-lib/cloudfunction
 
 clean: 
-	rm -rf ./hello_world/index
+	rm -rf ./index
 	
 build:
-	GOOS=linux GOARCH=amd64 go build -o hello_world/index ./hello_world
+	GOOS=linux GOARCH=amd64 go build -o ./index .
