@@ -3,7 +3,7 @@
 
 ## 依赖组件
 
-本地调试native不需要依赖Docker，并且确保系统中已经安装好Node.js环境。当前native命令仅支持Node.js runtime。此外，需要升级TCF CLI >= 0.2.0版本。为保证部署云端和本地运行的结果一致，建议本地安装的runtime版本和云端版本保持一致。例如，如在云端使用Node.js 6.10，则本机建议也安装Node.js 6.x版本。
+本地调试native不需要依赖Docker，并且确保系统中已经安装好对应的运行环境（Node.js或Python）。当前native命令仅支持Node.js和Python runtime。此外，需要升级TCF CLI >= 0.2.0版本。为保证部署云端和本地运行的结果一致，建议本地安装的runtime版本和云端版本保持一致。例如，如在云端使用Node.js 6.10，则本机建议也安装Node.js 6.x版本。
 
 ## 调试命令
 
